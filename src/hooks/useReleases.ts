@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     collection,
     query,
@@ -7,6 +7,7 @@ import {
     getDocs,
     doc,
     getDoc,
+    deleteDoc,
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import type { Release } from '@/types';
@@ -43,5 +44,18 @@ export function useRelease(releaseId: string | undefined) {
             return { releaseId: snap.id, ...snap.data() } as Release;
         },
         staleTime: 5 * 60 * 1000,
+    });
+}
+
+/** Delete a release (admin only — Firestore rules enforce this) */
+export function useDeleteRelease() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: async (releaseId: string) => {
+            await deleteDoc(doc(db, 'releases', releaseId));
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['releases'] });
+        },
     });
 }

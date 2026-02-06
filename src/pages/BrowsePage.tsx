@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import { useReleases } from '@/hooks/useReleases';
+import { useReleases, useDeleteRelease } from '@/hooks/useReleases';
 import { useWants, useAddWant, useRemoveWant, useToggleWantStatus } from '@/hooks/useWants';
 import { useEvents } from '@/hooks/useEvents';
 import { useUIStore } from '@/stores/uiStore';
@@ -40,6 +40,7 @@ export default function BrowsePage() {
   const addWant = useAddWant();
   const removeWant = useRemoveWant();
   const toggleStatus = useToggleWantStatus();
+  const deleteRelease = useDeleteRelease();
 
   // Set default event on first load
   useMemo(() => {
@@ -68,9 +69,7 @@ export default function BrowsePage() {
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        (r) =>
-          r.artist.toLowerCase().includes(q) ||
-          r.title.toLowerCase().includes(q),
+        (r) => r.artist.toLowerCase().includes(q) || r.title.toLowerCase().includes(q)
       );
     }
 
@@ -122,9 +121,7 @@ export default function BrowsePage() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() =>
-            setSortOrder(sortOrder === 'ARTIST_ASC' ? 'ARTIST_DESC' : 'ARTIST_ASC')
-          }
+          onClick={() => setSortOrder(sortOrder === 'ARTIST_ASC' ? 'ARTIST_DESC' : 'ARTIST_ASC')}
           title={sortOrder === 'ARTIST_ASC' ? 'A → Z' : 'Z → A'}
         >
           {sortOrder === 'ARTIST_ASC' ? (
@@ -184,11 +181,13 @@ export default function BrowsePage() {
               release={release}
               want={wantsMap.get(buildWantId(release.eventId, release.releaseId))}
               isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
               onAddWant={(r) => addWant.mutate(r)}
               onRemoveWant={(id) => removeWant.mutate(id)}
               onToggleAcquired={(id, status) =>
                 toggleStatus.mutate({ wantId: id, newStatus: status })
               }
+              onDeleteRelease={(id) => deleteRelease.mutate(id)}
             />
           ))}
         </div>
@@ -203,11 +202,13 @@ export default function BrowsePage() {
               release={release}
               want={wantsMap.get(buildWantId(release.eventId, release.releaseId))}
               isAuthenticated={isAuthenticated}
+              isAdmin={isAdmin}
               onAddWant={(r) => addWant.mutate(r)}
               onRemoveWant={(id) => removeWant.mutate(id)}
               onToggleAcquired={(id, status) =>
                 toggleStatus.mutate({ wantId: id, newStatus: status })
               }
+              onDeleteRelease={(id) => deleteRelease.mutate(id)}
             />
           ))}
         </div>
