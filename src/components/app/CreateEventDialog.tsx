@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { auth } from '@/lib/firebase';
+import { functions } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
@@ -24,14 +25,22 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Loader2, Globe, ClipboardPaste } from 'lucide-react';
 
-const FUNCTION_URL =
-  'https://us-central1-rsdlist-e19fe.cloudfunctions.net/importRsdReleases';
+const importRsdReleases = httpsCallable<ImportRequest, ImportResult>(functions, 'importRsdReleases');
 
 interface ImportResult {
   eventId: string;
   eventName: string;
   releaseCount: number;
   message: string;
+}
+
+interface ImportRequest {
+  url?: string;
+  pasteData?: string;
+  eventName: string;
+  year: number;
+  season: 'spring' | 'fall';
+  releaseDate: string;
 }
 
 export function CreateEventDialog() {
@@ -78,38 +87,16 @@ export function CreateEventDialog() {
     setLoading(true);
 
     try {
-      const token = await auth.currentUser?.getIdToken();
-      if (!token) {
-        toast.error('You must be signed in');
-        return;
-      }
-
-      const res = await fetch(FUNCTION_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          data: {
-            url: importMode === 'url' ? url : undefined,
-            pasteData: importMode === 'paste' ? pasteData : undefined,
-            eventName,
-            year: yearNum,
-            season,
-            releaseDate,
-          },
-        }),
+      const result = await importRsdReleases({
+        url: importMode === 'url' ? url : undefined,
+        pasteData: importMode === 'paste' ? pasteData : undefined,
+        eventName,
+        year: yearNum,
+        season,
+        releaseDate,
       });
 
-      const json = await res.json();
-
-      if (!res.ok) {
-        throw new Error(json?.error?.message ?? `Import failed (${res.status})`);
-      }
-
-      const result: ImportResult = json.result;
-      toast.success(result.message);
+      toast.success(result.data.message);
 
       // Invalidate queries so the new event/releases show up
       await queryClient.invalidateQueries({ queryKey: ['events'] });

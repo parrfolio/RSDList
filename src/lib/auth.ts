@@ -49,8 +49,11 @@ export function onAuthChange(callback: (user: FirebaseUser | null) => void): Uns
     return onAuthStateChanged(auth, callback);
 }
 
-/** Update user profile fields in Firestore */
+/** Update user profile fields in Firestore (owner-only) */
 export async function updateUserProfile(uid: string, data: { displayName?: string; photoURL?: string }) {
+    if (uid !== auth.currentUser?.uid) {
+        throw new Error('Cannot update another user\'s profile');
+    }
     const userRef = doc(db, 'users', uid);
     await updateDoc(userRef, { ...data, updatedAt: serverTimestamp() });
 }
@@ -60,6 +63,10 @@ export async function updateUserProfile(uid: string, data: { displayName?: strin
  * Replaces any existing avatar for the user (only one stored at a time).
  */
 export async function uploadAvatar(uid: string, file: File): Promise<string> {
+    if (uid !== auth.currentUser?.uid) {
+        throw new Error('Cannot upload avatar for another user');
+    }
+
     // Always overwrite the same path so there's only one avatar per user
     const avatarRef = ref(storage, `avatars/${uid}/avatar`);
 

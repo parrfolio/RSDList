@@ -28,5 +28,11 @@ dist/
 # Node
 node_modules/
 
+# Firebase Functions build output
+functions/lib/
+
+# Vite cache
+.vite/
+
 # Logs
 *.log

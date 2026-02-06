@@ -51,10 +51,57 @@ async function assertAdmin(email: string | undefined): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
+// SSRF-safe URL validation
+// ---------------------------------------------------------------------------
+
+const ALLOWED_DOMAINS = ['recordstoreday.com', 'www.recordstoreday.com'];
+
+function validateScraperUrl(url: string): void {
+    let parsed: URL;
+    try {
+        parsed = new URL(url);
+    } catch {
+        throw new HttpsError('invalid-argument', 'Invalid URL format');
+    }
+
+    // Block non-HTTP protocols
+    if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') {
+        throw new HttpsError('invalid-argument', 'Only HTTP/HTTPS URLs are allowed');
+    }
+
+    // Block internal/private IPs and metadata endpoints
+    const hostname = parsed.hostname.toLowerCase();
+    const blocked = [
+        'localhost', '127.0.0.1', '0.0.0.0', '::1',
+        '169.254.169.254', 'metadata.google.internal',
+        '10.', '172.16.', '172.17.', '172.18.', '172.19.',
+        '172.20.', '172.21.', '172.22.', '172.23.', '172.24.',
+        '172.25.', '172.26.', '172.27.', '172.28.', '172.29.',
+        '172.30.', '172.31.', '192.168.',
+    ];
+    for (const prefix of blocked) {
+        if (hostname === prefix || hostname.startsWith(prefix)) {
+            throw new HttpsError('invalid-argument', 'URLs targeting internal networks are not allowed');
+        }
+    }
+
+    // Allowlist domains
+    if (!ALLOWED_DOMAINS.includes(hostname)) {
+        throw new HttpsError(
+            'invalid-argument',
+            `Only these domains are allowed: ${ALLOWED_DOMAINS.join(', ')}`,
+        );
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Scraper: fetch HTML and parse the table
 // ---------------------------------------------------------------------------
 
 async function scrapeReleasesFromUrl(url: string): Promise<ParsedRelease[]> {
+    // Validate URL before fetching (SSRF protection)
+    validateScraperUrl(url);
+
     const releases: ParsedRelease[] = [];
 
     // Fetch with browser-like headers to avoid simple WAF blocks
@@ -214,6 +261,7 @@ export const importRsdReleases = onCall(
         region: 'us-central1',
         timeoutSeconds: 300,
         memory: '512MiB',
+        maxInstances: 2,
     },
     async (request) => {
         // Must be authenticated

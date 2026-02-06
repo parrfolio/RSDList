@@ -12,7 +12,6 @@ export const ReleaseSchema = z.object({
     quantity: z.number().nullable().optional(),
     description: z.string().nullable().optional(),
     imageUrl: z.string().nullable().optional(),
-    description: z.string().nullable().optional(),
     detailsUrl: z.string().nullable().optional(),
     createdAt: z.any().optional(),
     updatedAt: z.any().optional(),

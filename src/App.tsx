@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/hooks/useAuth';
 import { Toaster } from 'sonner';
 import { AppLayout } from '@/components/app/AppLayout';
+import { ProtectedRoute } from '@/components/app/ProtectedRoute';
 import HomePage from '@/pages/HomePage';
 import AuthPage from '@/pages/AuthPage';
 import BrowsePage from '@/pages/BrowsePage';
@@ -32,8 +33,8 @@ function App() {
               <Route element={<AppLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="/rsd" element={<BrowsePage />} />
-                <Route path="/mylist" element={<MyListPage />} />
-                <Route path="/account" element={<AccountPage />} />
+                <Route path="/mylist" element={<ProtectedRoute><MyListPage /></ProtectedRoute>} />
+                <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
               </Route>
             </Routes>
           </BrowserRouter>
