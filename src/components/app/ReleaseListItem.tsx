@@ -2,6 +2,7 @@ import type { Release, Want } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Check, Disc3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ReleaseListItemProps {
   release: Release;
@@ -24,8 +25,9 @@ export function ReleaseListItem({
   const isAcquired = want?.status === 'ACQUIRED';
 
   return (
+    <Link to={`/release/${release.releaseId}`} className="block">
     <div
-      className={`flex items-center gap-3 p-3 rounded-lg border transition-all ${
+      className={`flex items-center gap-3 p-3 rounded-lg border transition-all hover:bg-muted/50 ${
         isAcquired ? 'opacity-60 bg-success/5' : 'bg-card'
       }`}
     >
@@ -64,8 +66,11 @@ export function ReleaseListItem({
           {!want ? (
             <Button
               size="sm"
-              variant="ghost"
-              onClick={() => onAddWant(release)}
+              variant="ge) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onAddWant(release);
+              }}
             >
               <Heart className="h-4 w-4" />
             </Button>
@@ -74,7 +79,11 @@ export function ReleaseListItem({
               <Button
                 size="sm"
                 variant="default"
-                onClick={() => onToggleAcquired(want.wantId, 'ACQUIRED')}
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleAcquired(want.wantId, 'ACQUIRED');
+                }}
               >
                 <Check className="h-4 w-4" />
               </Button>
@@ -82,7 +91,13 @@ export function ReleaseListItem({
                 size="sm"
                 variant="ghost"
                 className="text-muted-foreground"
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemoveWant(want.wantId);
+                }
                 onClick={() => onRemoveWant(want.wantId)}
+    </Link>
               >
                 ✕
               </Button>

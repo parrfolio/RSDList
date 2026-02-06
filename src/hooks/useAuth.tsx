@@ -6,7 +6,7 @@ import {
   type ReactNode,
 } from 'react';
 import { type User as FirebaseUser } from 'firebase/auth';
-import { doc, onSnapshot } from 'firebase/firestore';
+import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { onAuthChange } from '@/lib/auth';
 import type { User } from '@/types';
@@ -16,6 +16,7 @@ interface AuthContextValue {
   user: User | null;
   loading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -23,12 +24,14 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
   isAuthenticated: false,
+  isAdmin: false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Listen to Firebase Auth state
   useEffect(() => {
@@ -36,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setFirebaseUser(fbUser);
       if (!fbUser) {
         setUser(null);
+        setIsAdmin(false);
         setLoading(false);
       }
     });
@@ -57,6 +61,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, [firebaseUser]);
 
+  // Check admin status
+  useEffect(() => {
+    if (!firebaseUser?.email) {
+      setIsAdmin(false);
+      return;
+    }
+
+    const adminRef = doc(db, 'admins', firebaseUser.email);
+    getDoc(adminRef).then((snap) => {
+      setIsAdmin(snap.exists());
+    }).catch(() => {
+      setIsAdmin(false);
+    });
+  }, [firebaseUser]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -64,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         user,
         loading,
         isAuthenticated: !!firebaseUser,
+        isAdmin,
       }}
     >
       {children}

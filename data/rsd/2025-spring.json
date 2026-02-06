@@ -1,143 +1,167 @@
 {
-  "event": {
-    "eventId": "rsd_2025_spring",
-    "year": 2025,
-    "season": "spring",
-    "name": "Record Store Day 2025",
-    "releaseDate": "2025-04-19"
-  },
-  "releases": [
-    {
-      "releaseId": "rsd25s-001",
-      "eventId": "rsd_2025_spring",
-      "artist": "The Beatles",
-      "title": "Now And Then (12\" Picture Disc)",
-      "format": "12\" Vinyl",
-      "releaseType": "RSD Exclusive",
-      "label": "Apple Records",
-      "quantity": 15000,
-      "imageUrl": null
+    "event": {
+        "eventId": "rsd_2025_spring",
+        "year": 2025,
+        "season": "spring",
+        "name": "Record Store Day 2025",
+        "releaseDate": "2025-04-19"
     },
-    {
-      "releaseId": "rsd25s-002",
-      "eventId": "rsd_2025_spring",
-      "artist": "Billie Eilish",
-      "title": "Hit Me Hard and Soft Sessions",
-      "format": "LP",
-      "releaseType": "RSD Exclusive",
-      "label": "Interscope",
-      "quantity": 10000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-003",
-      "eventId": "rsd_2025_spring",
-      "artist": "David Bowie",
-      "title": "Scary Monsters (Super Deluxe)",
-      "format": "2xLP",
-      "releaseType": "RSD First",
-      "label": "Parlophone",
-      "quantity": 8000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-004",
-      "eventId": "rsd_2025_spring",
-      "artist": "Fleetwood Mac",
-      "title": "Mirage Tour '82 (Live)",
-      "format": "2xLP",
-      "releaseType": "RSD Exclusive",
-      "label": "Warner Records",
-      "quantity": 6000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-005",
-      "eventId": "rsd_2025_spring",
-      "artist": "Kendrick Lamar",
-      "title": "GNX Sessions (Alt Mixes)",
-      "format": "LP",
-      "releaseType": "RSD Exclusive",
-      "label": "pgLang",
-      "quantity": 12000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-006",
-      "eventId": "rsd_2025_spring",
-      "artist": "LCD Soundsystem",
-      "title": "Sound of Silver (Silver Vinyl)",
-      "format": "2xLP",
-      "releaseType": "RSD First",
-      "label": "DFA Records",
-      "quantity": 5000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-007",
-      "eventId": "rsd_2025_spring",
-      "artist": "MF DOOM",
-      "title": "Born Like This (Instrumentals)",
-      "format": "LP",
-      "releaseType": "RSD Exclusive",
-      "label": "Lex Records",
-      "quantity": 3000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-008",
-      "eventId": "rsd_2025_spring",
-      "artist": "Nirvana",
-      "title": "MTV Unplugged (Rehearsal Sessions)",
-      "format": "LP",
-      "releaseType": "RSD Exclusive",
-      "label": "Geffen",
-      "quantity": 20000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-009",
-      "eventId": "rsd_2025_spring",
-      "artist": "Radiohead",
-      "title": "The Bends (Half-Speed Master)",
-      "format": "LP",
-      "releaseType": "RSD First",
-      "label": "XL Recordings",
-      "quantity": 7500,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-010",
-      "eventId": "rsd_2025_spring",
-      "artist": "Stevie Wonder",
-      "title": "Songs In The Key of Life (45 RPM)",
-      "format": "4xLP Box",
-      "releaseType": "RSD Exclusive",
-      "label": "Motown",
-      "quantity": 4000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-011",
-      "eventId": "rsd_2025_spring",
-      "artist": "Taylor Swift",
-      "title": "Folklore: The Long Pond Sessions",
-      "format": "2xLP",
-      "releaseType": "RSD Exclusive",
-      "label": "Republic",
-      "quantity": 25000,
-      "imageUrl": null
-    },
-    {
-      "releaseId": "rsd25s-012",
-      "eventId": "rsd_2025_spring",
-      "artist": "Tyler, The Creator",
-      "title": "CHROMAKOPIA Instrumentals",
-      "format": "LP",
-      "releaseType": "RSD Exclusive",
-      "label": "Columbia",
-      "quantity": 10000,
-      "imageUrl": null
-    }
-  ]
+    "releases": [
+        {
+            "releaseId": "rsd25s-001",
+            "eventId": "rsd_2025_spring",
+            "artist": "The Beatles",
+            "title": "Now And Then (12\" Picture Disc)",
+            "format": "12\" Vinyl",
+            "releaseType": "RSD Exclusive",
+            "label": "Apple Records",
+            "quantity": 15000,
+            "imageUrl": null,
+            "description": "A special 12\" picture disc featuring the final Beatles song 'Now And Then', including the original demo.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-002",
+            "eventId": "rsd_2025_spring",
+            "artist": "Billie Eilish",
+            "title": "Hit Me Hard and Soft Sessions",
+            "format": "LP",
+            "releaseType": "RSD Exclusive",
+            "label": "Interscope",
+            "quantity": 10000,
+            "imageUrl": null,
+            "description": "Exclusive session recordings from the 'Hit Me Hard and Soft' era, available on vinyl for the first time.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-003",
+            "eventId": "rsd_2025_spring",
+            "artist": "David Bowie",
+            "title": "Scary Monsters (Super Deluxe)",
+            "format": "2xLP",
+            "releaseType": "RSD First",
+            "label": "Parlophone",
+            "quantity": 8000,
+            "imageUrl": null,
+            "description": "A deluxe expanded edition of Bowie's classic 1980 album, featuring unreleased outtakes and alternative mixes.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-004",
+            "eventId": "rsd_2025_spring",
+            "artist": "Fleetwood Mac",
+            "title": "Mirage Tour '82 (Live)",
+            "format": "2xLP",
+            "releaseType": "RSD Exclusive",
+            "label": "Warner Records",
+            "quantity": 6000,
+            "imageUrl": null,
+            "description": "A never-before-released live performance capturing Fleetwood Mac at the height of their 'Mirage' tour.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-005",
+            "eventId": "rsd_2025_spring",
+            "artist": "Kendrick Lamar",
+            "title": "GNX Sessions (Alt Mixes)",
+            "format": "LP",
+            "releaseType": "RSD Exclusive",
+            "label": "pgLang",
+            "quantity": 12000,
+            "imageUrl": null,
+            "description": "Alternative mixes and demos from Kendrick Lamar's latest masterpiece.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-006",
+            "eventId": "rsd_2025_spring",
+            "artist": "LCD Soundsystem",
+            "title": "Sound of Silver (Silver Vinyl)",
+            "format": "2xLP",
+            "releaseType": "RSD First",
+            "label": "DFA Records",
+            "quantity": 5000,
+            "imageUrl": null,
+            "description": "The definitive pressing of the dance-punk classic, now on appropriate silver vinyl.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-007",
+            "eventId": "rsd_2025_spring",
+            "artist": "MF DOOM",
+            "title": "Born Like This (Instrumentals)",
+            "format": "LP",
+            "releaseType": "RSD Exclusive",
+            "label": "Lex Records",
+            "quantity": 3000,
+            "imageUrl": null,
+            "description": "The complete instrumental versions of MF DOOM's gritty 2009 album.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-008",
+            "eventId": "rsd_2025_spring",
+            "artist": "Nirvana",
+            "title": "MTV Unplugged (Rehearsal Sessions)",
+            "format": "LP",
+            "releaseType": "RSD Exclusive",
+            "label": "Geffen",
+            "quantity": 20000,
+            "imageUrl": null,
+            "description": "Rare rehearsal recordings from the legendary MTV Unplugged in New York performance.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-009",
+            "eventId": "rsd_2025_spring",
+            "artist": "Radiohead",
+            "title": "The Bends (Half-Speed Master)",
+            "format": "LP",
+            "releaseType": "RSD First",
+            "label": "XL Recordings",
+            "quantity": 7500,
+            "imageUrl": null,
+            "description": "An audiophile-grade half-speed master of Radiohead's sophomore album.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-010",
+            "eventId": "rsd_2025_spring",
+            "artist": "Stevie Wonder",
+            "title": "Songs In The Key of Life (45 RPM)",
+            "format": "4xLP Box",
+            "releaseType": "RSD Exclusive",
+            "label": "Motown",
+            "quantity": 4000,
+            "imageUrl": null,
+            "description": "The ultimate listening experience for Stevie Wonder's magnum opus, cut at 45 RPM.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-011",
+            "eventId": "rsd_2025_spring",
+            "artist": "Taylor Swift",
+            "title": "Folklore: The Long Pond Sessions",
+            "format": "2xLP",
+            "releaseType": "RSD Exclusive",
+            "label": "Republic",
+            "quantity": 25000,
+            "imageUrl": null,
+            "description": "The intimate studio sessions of folklore, pressed on grey vinyl.",
+            "detailsUrl": null
+        },
+        {
+            "releaseId": "rsd25s-012",
+            "eventId": "rsd_2025_spring",
+            "artist": "Tyler, The Creator",
+            "title": "CHROMAKOPIA Instrumentals",
+            "format": "LP",
+            "releaseType": "RSD Exclusive",
+            "label": "Columbia",
+            "quantity": 10000,
+            "imageUrl": null,
+            "description": "Instrumental versions of tracks from the chart-topping album.",
+            "detailsUrl": null
+        }
+    ]
 }

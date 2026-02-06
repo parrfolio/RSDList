@@ -4,12 +4,12 @@ export type { User } from './user';
 export type { Want, WantStatus } from './want';
 
 export {
-  SeasonSchema,
-  EventIdSchema,
-  RsdEventSchema,
-  buildEventId,
-  parseEventId,
-  getEventLabel,
+    SeasonSchema,
+    EventIdSchema,
+    RsdEventSchema,
+    buildEventId,
+    parseEventId,
+    getEventLabel,
 } from './event';
 export { ReleaseSchema } from './release';
 export { UserSchema } from './user';

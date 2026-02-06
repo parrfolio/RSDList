@@ -10,34 +10,34 @@
     /* Lunaris Design System - Light Mode */
     --background: 85 7% 95%;
     --foreground: 0 0% 7%;
-    
+
     --card: 0 0% 100%;
     --card-foreground: 0 0% 7%;
-    
+
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 7%;
-    
+
     --primary: 31 100% 50%;
     --primary-foreground: 0 0% 7%;
-    
+
     --secondary: 80 5% 90%;
     --secondary-foreground: 0 0% 7%;
-    
+
     --muted: 85 7% 95%;
     --muted-foreground: 0 0% 40%;
-    
+
     --accent: 85 7% 95%;
     --accent-foreground: 0 0% 7%;
-    
+
     --destructive: 11 81% 47%;
     --destructive-foreground: 0 0% 100%;
-    
+
     --border: 80 3% 79%;
     --input: 80 3% 79%;
     --ring: 0 0% 40%;
-    
+
     --radius: 1rem;
-    
+
     /* Sidebar - Lunaris Light */
     --sidebar-background: 80 5% 90%;
     --sidebar-foreground: 0 0% 40%;
@@ -47,7 +47,7 @@
     --sidebar-accent-foreground: 240 6% 10%;
     --sidebar-border: 80 3% 79%;
     --sidebar-ring: 240 4% 46%;
-    
+
     /* Semantic Colors */
     --success: 135 11% 89%;
     --success-foreground: 140 100% 15%;
@@ -57,7 +57,7 @@
     --error-foreground: 14 100% 27%;
     --info: 240 11% 89%;
     --info-foreground: 240 100% 20%;
-    
+
     /* Radius tokens */
     --radius-none: 0;
     --radius-m: 1rem;
@@ -68,32 +68,32 @@
     /* Lunaris Design System - Dark Mode */
     --background: 0 0% 7%;
     --foreground: 0 0% 100%;
-    
+
     --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
-    
+
     --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
-    
+
     --primary: 31 100% 50%;
     --primary-foreground: 0 0% 7%;
-    
+
     --secondary: 0 0% 18%;
     --secondary-foreground: 0 0% 100%;
-    
+
     --muted: 0 0% 18%;
     --muted-foreground: 80 2% 71%;
-    
+
     --accent: 0 0% 7%;
     --accent-foreground: 85 7% 95%;
-    
+
     --destructive: 11 100% 60%;
     --destructive-foreground: 0 0% 100%;
-    
+
     --border: 0 0% 18%;
     --input: 0 0% 18%;
     --ring: 0 0% 40%;
-    
+
     /* Sidebar - Lunaris Dark */
     --sidebar-background: 240 6% 10%;
     --sidebar-foreground: 0 0% 98%;
@@ -103,7 +103,7 @@
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 0 0% 100% / 0.1;
     --sidebar-ring: 240 4% 46%;
-    
+
     /* Semantic Colors */
     --success: 135 14% 15%;
     --success-foreground: 135 100% 86%;
@@ -118,10 +118,12 @@
   * {
     @apply border-border;
   }
-  
+
   body {
     @apply bg-background text-foreground font-sans;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 }
 
