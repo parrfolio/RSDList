@@ -1,22 +1,13 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useRelease } from '@/hooks/useReleases';
-import { useWants, useAddWant, useRemoveWant, useToggleWantStatus } from '@/hooks/useWants';
+import { useWants, useAddWant, useRemoveWant } from '@/hooks/useWants';
 import { useAuth } from '@/hooks/useAuth';
 import { buildWantId } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  ArrowLeft,
-  Heart,
-  Check,
-  Disc3,
-  Disc,
-  Building2,
-  Calendar,
-  Hash,
-} from 'lucide-react';
+import { ArrowLeft, Heart, Check, Disc3, Disc, Building2, Calendar, Hash } from 'lucide-react';
 
 export default function ReleaseDetailPage() {
   const { releaseId } = useParams<{ releaseId: string }>();
@@ -24,12 +15,10 @@ export default function ReleaseDetailPage() {
   const { data: release, isLoading } = useRelease(releaseId);
   const { isAuthenticated } = useAuth();
 
-  // We need the eventId to build the wantId. release data has eventId.
   const { data: wants } = useWants(release?.eventId);
 
   const { mutate: addWant } = useAddWant();
   const { mutate: removeWant } = useRemoveWant();
-  const { mutate: toggleStatus } = useToggleWantStatus();
 
   if (isLoading) {
     return <ReleaseDetailSkeleton />;
@@ -47,13 +36,10 @@ export default function ReleaseDetailPage() {
     );
   }
 
-  // Determine want status
   const wantId = buildWantId(release.eventId, release.releaseId);
   const want = wants?.find((w) => w.wantId === wantId);
-  const isWanted = want?.status === 'WANTED';
-  const isAcquired = want?.status === 'ACQUIRED';
+  const hasWant = !!want;
 
-  // Format helpers
   const formatQuantity = (q?: number | null) => q?.toLocaleString() ?? 'Unknown';
   const eventName = release.eventId
     .replace(/_/g, ' ')
@@ -61,21 +47,18 @@ export default function ReleaseDetailPage() {
     .replace('Rsd', 'RSD');
 
   return (
-    <div className="pb-24 dark:bg-zinc-950 min-h-screen animate-in fade-in duration-300">
-      {/* Navigation Header */}
-      <div classNamedark:bg-zinc-950 min-h-screen animate-in fade-in duration-300">
-      {/* Fixed Navigation Header */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b px-4 py-3 flex items-center gap-2">
-        <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="-ml-2">
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <span className="font-semibold text-sm truncate">
-          {release.artist}
-        </span>
-      </div>
+    <div className="min-h-screen bg-background text-foreground animate-in fade-in duration-300">
+      {/* Sticky header */}
+      <header className="border-b border-border sticky top-0 z-50 bg-background">
+        <div className="container mx-auto px-4 h-14 flex items-center gap-2">
+          <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="-ml-2">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <span className="font-semibold text-sm truncate">{release.artist}</span>
+        </div>
+      </header>
 
-      {/* Top spacing for fixed header */}
-      <div className="h-14" /ero Section: Artwork */}
+      {/* Hero Section: Artwork */}
       <div className="bg-muted/30 pb-6 border-b">
         <div className="container max-w-md mx-auto p-6 flex justify-center">
           <div className="relative aspect-square w-full max-w-[320px] shadow-xl rounded-md overflow-hidden bg-background">
@@ -91,11 +74,10 @@ export default function ReleaseDetailPage() {
               </div>
             )}
 
-            {/* Status Overlay Badge if acquired */}
-            {isAcquired && (
-              <div className="absolute top-4 right-4 bg-success text-success-foreground px-3 py-1 rounded-full font-bold text-xs shadow-lg flex items-center gap-1.5 animate-in zoom-in spin-in-3 duration-300">
+            {hasWant && (
+              <div className="absolute top-4 right-4 bg-primary text-primary-foreground px-3 py-1 rounded-full font-bold text-xs shadow-lg flex items-center gap-1.5 animate-in zoom-in duration-300">
                 <Check className="h-3.5 w-3.5" />
-                Got
+                Added
               </div>
             )}
           </div>
@@ -114,6 +96,11 @@ export default function ReleaseDetailPage() {
             {release.releaseType && (
               <Badge variant="outline" className="border-primary/20 text-primary bg-primary/5">
                 {release.releaseType}
+              </Badge>
+            )}
+            {release.label && (
+              <Badge variant="outline" className="text-muted-foreground">
+                {release.label}
               </Badge>
             )}
           </div>
@@ -144,10 +131,13 @@ export default function ReleaseDetailPage() {
               value={formatQuantity(release.quantity)}
             />
             <DetailRow icon={<Calendar className="h-4 w-4" />} label="Event" value={eventName} />
-          </Action Buttons */}
+          </CardContent>
+        </Card>
+
+        {/* Action Button */}
         {isAuthenticated ? (
           <div className="space-y-2">
-            {!want ? (
+            {!hasWant ? (
               <Button
                 size="lg"
                 variant="outline"
@@ -157,34 +147,15 @@ export default function ReleaseDetailPage() {
                 <Heart className="h-4 w-4" />
                 Want
               </Button>
-            ) : isWanted ? (
-              <div className="flex gap-2">
-                <Button
-                  size="lg"
-                  variant="default"
-                  className="flex-1 gap-2"
-                  onClick={() => toggleStatus({ wantId, newStatus: 'ACQUIRED' })}
-                >
-                  <Check className="h-4 w-4" />
-                  Got It
-                </Button>
-                <Button
-                  size="lg"
-                  variant="ghost"
-                  onClick={() => removeWant(wantId)}
-                >
-                  Remove
-                </Button>
-              </div>
             ) : (
               <Button
                 size="lg"
-                variant="secondary"
+                variant="default"
                 className="w-full gap-2"
-                onClick={() => toggleStatus({ wantId, newStatus: 'WANTED' })}
+                onClick={() => removeWant(wantId)}
               >
                 <Check className="h-4 w-4" />
-                In Your Collection
+                Added
               </Button>
             )}
           </div>
@@ -192,10 +163,7 @@ export default function ReleaseDetailPage() {
           <Button variant="outline" className="w-full" asChild>
             <a href="/auth">Sign in to track</a>
           </Button>
-        )})}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
@@ -224,16 +192,14 @@ function DetailRow({
 
 function ReleaseDetailSkeleton() {
   return (
-    <div className="min-h-screen">
-      {/* Fixed header skeleton */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b px-4 py-3 flex items-center gap-2">
-        <Skeleton className="h-9 w-9 rounded-md" />
-        <Skeleton className="h-4 w-48" />
-      </div>
-      
-      {/* Top spacing */}
-      <div className="h-14" />
-      
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border sticky top-0 z-50 bg-background">
+        <div className="container mx-auto px-4 h-14 flex items-center gap-2">
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-4 w-48" />
+        </div>
+      </header>
+
       <div className="container max-w-2xl px-4 py-8 space-y-8 animate-pulse">
         <div className="flex justify-center">
           <Skeleton className="h-80 w-80 rounded-md" />

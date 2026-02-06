@@ -1,7 +1,6 @@
 import type { Release, Want } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Heart, Check, Disc3, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -12,7 +11,6 @@ interface ReleaseCardProps {
   isAdmin?: boolean;
   onAddWant: (release: Release) => void;
   onRemoveWant: (wantId: string) => void;
-  onToggleAcquired: (wantId: string, newStatus: 'WANTED' | 'ACQUIRED') => void;
   onDeleteRelease?: (releaseId: string) => void;
 }
 
@@ -23,15 +21,17 @@ export function ReleaseCard({
   isAdmin,
   onAddWant,
   onRemoveWant,
-  onToggleAcquired,
   onDeleteRelease,
 }: ReleaseCardProps) {
   const isWanted = want?.status === 'WANTED';
   const isAcquired = want?.status === 'ACQUIRED';
+  const hasWant = !!want && (isWanted || isAcquired);
 
   return (
     <Link to={`/release/${release.releaseId}`} className="block group">
-      <Card className={`overflow-hidden transition-all hover:shadow-md ${isAcquired ? 'opacity-75' : ''}`}>
+      <Card
+        className={`overflow-hidden transition-all hover:shadow-md ${isAcquired ? 'opacity-75' : ''}`}
+      >
         {/* Album art */}
         <div className="aspect-square bg-muted flex items-center justify-center relative">
           {release.imageUrl ? (
@@ -74,32 +74,16 @@ export function ReleaseCard({
         </div>
 
         <CardContent className="p-3 space-y-2">
-          <div className="space-y-1">
+          <div>
             <h3 className="font-semibold text-sm leading-tight line-clamp-1">
-              {release.artist}
+              {release.artist} – {release.title}
             </h3>
-            <p className="text-xs text-muted-foreground leading-tight line-clamp-2">
-              {release.title}
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-1">
-            {release.format && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
-                {release.format}
-              </Badge>
-            )}
-            {release.releaseType && (
-              <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                {release.releaseType}
-              </Badge>
-            )}
           </div>
 
           {/* Actions */}
           {isAuthenticated && (
             <div className="flex gap-2 pt-1">
-              {!want ? (
+              {!hasWant ? (
                 <Button
                   size="sm"
                   variant="outline"
@@ -113,46 +97,19 @@ export function ReleaseCard({
                   <Heart className="h-3 w-3 mr-1" />
                   Want
                 </Button>
-              ) : isWanted ? (
-                <>
-                  <Button
-                    size="sm"
-                    variant="default"
-                    className="flex-1 text-xs"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onToggleAcquired(want.wantId, 'ACQUIRED');
-                    }}
-                  >
-                    <Check className="h-3 w-3 mr-1" />
-                    Got It
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="text-xs text-muted-foreground"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      onRemoveWant(want.wantId);
-                    }}
-                  >
-                    ✕
-                  </Button>
-                </>
               ) : (
                 <Button
                   size="sm"
-                  variant="secondary"
+                  variant="default"
                   className="w-full text-xs"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    onToggleAcquired(want.wantId, 'WANTED');
+                    onRemoveWant(want!.wantId);
                   }}
                 >
-                  Move back to wanted
+                  <Check className="h-3 w-3 mr-1" />
+                  Added
                 </Button>
               )}
             </div>

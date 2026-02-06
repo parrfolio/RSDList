@@ -24,10 +24,7 @@ export function AppLayout() {
             <Disc3 className="h-6 w-6 text-primary" />
             <h1 className="text-lg font-bold text-primary">RSD Wants</h1>
             {activeEventId && (
-              <Badge
-                variant="outline"
-                className="text-[10px] hidden sm:inline-flex"
-              >
+              <Badge variant="outline" className="text-[10px] hidden sm:inline-flex">
                 {getEventLabel(activeEventId)}
               </Badge>
             )}
@@ -48,7 +45,7 @@ export function AppLayout() {
           <NavItem
             to="/mylist"
             icon={Heart}
-            label="My List"
+            label="My Wants"
             active={location.pathname === '/mylist'}
             badge={wantedCount > 0 ? wantedCount : undefined}
           />

@@ -11,7 +11,7 @@ interface ReleaseListItemProps {
   isAdmin?: boolean;
   onAddWant: (release: Release) => void;
   onRemoveWant: (wantId: string) => void;
-  onToggleAcquired: (wantId: string, newStatus: 'WANTED' | 'ACQUIRED') => void;
+  onTagClick?: (tag: string) => void;
   onDeleteRelease?: (releaseId: string) => void;
 }
 
@@ -22,11 +22,12 @@ export function ReleaseListItem({
   isAdmin,
   onAddWant,
   onRemoveWant,
-  onToggleAcquired,
+  onTagClick,
   onDeleteRelease,
 }: ReleaseListItemProps) {
   const isWanted = want?.status === 'WANTED';
   const isAcquired = want?.status === 'ACQUIRED';
+  const hasWant = !!want && (isWanted || isAcquired);
 
   return (
     <Link to={`/release/${release.releaseId}`} className="block">
@@ -36,7 +37,7 @@ export function ReleaseListItem({
         }`}
       >
         {/* Thumbnail */}
-        <div className="h-12 w-12 rounded bg-muted flex-shrink-0 flex items-center justify-center overflow-hidden">
+        <div className="h-24 w-24 rounded bg-muted flex-shrink-0 flex items-center justify-center overflow-hidden">
           {release.imageUrl ? (
             <img
               src={release.imageUrl}
@@ -45,20 +46,58 @@ export function ReleaseListItem({
               loading="lazy"
             />
           ) : (
-            <Disc3 className="h-6 w-6 text-muted-foreground/30" />
+            <Disc3 className="h-10 w-10 text-muted-foreground/30" />
           )}
         </div>
 
         {/* Info */}
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-sm leading-tight truncate">
-            {release.artist}
+            {release.title} – {release.artist}
           </h3>
-          <p className="text-xs text-muted-foreground truncate">{release.title}</p>
-          <div className="flex gap-1 mt-0.5">
+          {release.description && (
+            <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
+              {release.description}
+            </p>
+          )}
+          <div className="flex flex-wrap gap-1 mt-1">
             {release.format && (
-              <Badge variant="secondary" className="text-[10px] px-1 py-0">
+              <Badge
+                variant="secondary"
+                className="text-[10px] px-1.5 py-0 cursor-pointer hover:bg-secondary/80"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onTagClick?.(release.format!);
+                }}
+              >
                 {release.format}
+              </Badge>
+            )}
+            {release.releaseType && (
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1.5 py-0 cursor-pointer hover:bg-muted"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onTagClick?.(release.releaseType!);
+                }}
+              >
+                {release.releaseType}
+              </Badge>
+            )}
+            {release.label && (
+              <Badge
+                variant="outline"
+                className="text-[10px] px-1.5 py-0 cursor-pointer hover:bg-muted"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onTagClick?.(release.label!);
+                }}
+              >
+                {release.label}
               </Badge>
             )}
           </div>
@@ -67,7 +106,7 @@ export function ReleaseListItem({
         {/* Actions */}
         {isAuthenticated && (
           <div className="flex-shrink-0">
-            {!want ? (
+            {!hasWant ? (
               <Button
                 size="sm"
                 variant="ghost"
@@ -77,39 +116,22 @@ export function ReleaseListItem({
                   onAddWant(release);
                 }}
               >
-                <Heart className="h-4 w-4" />
+                <Heart className="h-4 w-4 mr-1" />
+                Want
               </Button>
-            ) : isWanted ? (
-              <div className="flex gap-1">
-                <Button
-                  size="sm"
-                  variant="default"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onToggleAcquired(want.wantId, 'ACQUIRED');
-                  }}
-                >
-                  <Check className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="text-muted-foreground"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    onRemoveWant(want.wantId);
-                  }}
-                >
-                  ✕
-                </Button>
-              </div>
             ) : (
-              <Badge className="bg-success text-success-foreground">
-                <Check className="h-3 w-3 mr-1" />
-                Got
-              </Badge>
+              <Button
+                size="sm"
+                variant="default"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onRemoveWant(want!.wantId);
+                }}
+              >
+                <Check className="h-4 w-4 mr-1" />
+                Added
+              </Button>
             )}
           </div>
         )}

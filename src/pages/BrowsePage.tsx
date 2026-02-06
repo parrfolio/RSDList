@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useReleases, useDeleteRelease } from '@/hooks/useReleases';
-import { useWants, useAddWant, useRemoveWant, useToggleWantStatus } from '@/hooks/useWants';
-import { useEvents } from '@/hooks/useEvents';
+import { useWants, useAddWant, useRemoveWant } from '@/hooks/useWants';
+import { useEvents, useDeleteEvent } from '@/hooks/useEvents';
 import { useUIStore } from '@/stores/uiStore';
 import { ReleaseCard } from '@/components/app/ReleaseCard';
 import { ReleaseListItem } from '@/components/app/ReleaseListItem';
@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { LayoutGrid, List, ArrowDownAZ, ArrowUpAZ, Search, Disc3 } from 'lucide-react';
+import { LayoutGrid, List, ArrowDownAZ, ArrowUpAZ, Search, Disc3, Trash2 } from 'lucide-react';
 import { buildWantId, getEventLabel, type Want } from '@/types';
 
 export default function BrowsePage() {
@@ -28,10 +28,14 @@ export default function BrowsePage() {
     sortOrder,
     searchQuery,
     activeEventId,
+    activeTags,
     setViewMode,
     setSortOrder,
     setSearchQuery,
     setActiveEventId,
+    addTag,
+    removeTag,
+    clearTags,
   } = useUIStore();
 
   const { data: events, isLoading: eventsLoading } = useEvents();
@@ -39,8 +43,8 @@ export default function BrowsePage() {
   const { data: wants } = useWants(activeEventId);
   const addWant = useAddWant();
   const removeWant = useRemoveWant();
-  const toggleStatus = useToggleWantStatus();
   const deleteRelease = useDeleteRelease();
+  const deleteEvent = useDeleteEvent();
 
   // Set default event on first load
   useMemo(() => {
@@ -73,6 +77,16 @@ export default function BrowsePage() {
       );
     }
 
+    // Tag filter
+    if (activeTags.length > 0) {
+      filtered = filtered.filter((r) => {
+        const releaseTags = [r.format, r.releaseType, r.label]
+          .filter(Boolean)
+          .map((t) => t!.toLowerCase());
+        return activeTags.every((tag) => releaseTags.some((rt) => rt.includes(tag.toLowerCase())));
+      });
+    }
+
     // Sort
     const sorted = [...filtered];
     sorted.sort((a, b) => {
@@ -81,7 +95,7 @@ export default function BrowsePage() {
     });
 
     return sorted;
-  }, [releases, searchQuery, sortOrder]);
+  }, [releases, searchQuery, sortOrder, activeTags]);
 
   const isLoading = eventsLoading || releasesLoading;
 
@@ -105,6 +119,35 @@ export default function BrowsePage() {
           {filteredReleases.length} releases
         </Badge>
         {isAdmin && <CreateEventDialog />}
+        {isAdmin && activeEventId && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-destructive hover:text-destructive hover:bg-destructive/10 gap-1.5"
+            onClick={() => {
+              const label = events?.find((e) => e.eventId === activeEventId);
+              if (
+                confirm(
+                  `Delete "${label ? getEventLabel(label.eventId) : activeEventId}" and all its releases? This cannot be undone.`
+                )
+              ) {
+                deleteEvent.mutate(activeEventId, {
+                  onSuccess: () => {
+                    setActiveEventId(
+                      events?.[0]?.eventId !== activeEventId
+                        ? (events?.[0]?.eventId ?? null)
+                        : (events?.[1]?.eventId ?? null)
+                    );
+                  },
+                });
+              }
+            }}
+            disabled={deleteEvent.isPending}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            {deleteEvent.isPending ? 'Deleting...' : 'Delete List'}
+          </Button>
+        )}
       </div>
 
       {/* Search + view controls */}
@@ -114,7 +157,11 @@ export default function BrowsePage() {
           <Input
             placeholder="Search artist or title..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setSearchQuery(val);
+              if (val === '') clearTags();
+            }}
             className="pl-9"
           />
         </div>
@@ -145,6 +192,27 @@ export default function BrowsePage() {
           <List className="h-4 w-4" />
         </Button>
       </div>
+
+      {/* Active tag filters */}
+      {activeTags.length > 0 && (
+        <div className="flex items-center gap-2 flex-wrap">
+          {activeTags.map((tag) => (
+            <Badge key={tag} variant="secondary" className="gap-1 text-xs">
+              {tag}
+              <button
+                className="ml-0.5 hover:text-destructive"
+                onClick={() => removeTag(tag)}
+                aria-label={`Remove ${tag} filter`}
+              >
+                ✕
+              </button>
+            </Badge>
+          ))}
+          <Button variant="ghost" size="sm" className="text-xs h-6" onClick={clearTags}>
+            Clear all
+          </Button>
+        </div>
+      )}
 
       {/* Loading skeleton */}
       {isLoading && (
@@ -184,9 +252,6 @@ export default function BrowsePage() {
               isAdmin={isAdmin}
               onAddWant={(r) => addWant.mutate(r)}
               onRemoveWant={(id) => removeWant.mutate(id)}
-              onToggleAcquired={(id, status) =>
-                toggleStatus.mutate({ wantId: id, newStatus: status })
-              }
               onDeleteRelease={(id) => deleteRelease.mutate(id)}
             />
           ))}
@@ -205,9 +270,7 @@ export default function BrowsePage() {
               isAdmin={isAdmin}
               onAddWant={(r) => addWant.mutate(r)}
               onRemoveWant={(id) => removeWant.mutate(id)}
-              onToggleAcquired={(id, status) =>
-                toggleStatus.mutate({ wantId: id, newStatus: status })
-              }
+              onTagClick={(tag) => addTag(tag)}
               onDeleteRelease={(id) => deleteRelease.mutate(id)}
             />
           ))}

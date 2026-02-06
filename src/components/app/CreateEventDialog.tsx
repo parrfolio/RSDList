@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { httpsCallable } from 'firebase/functions';
-import { getFunctions } from 'firebase/functions';
-import { app } from '@/lib/firebase';
+import { auth } from '@/lib/firebase';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import {
@@ -26,7 +24,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Loader2, Globe, ClipboardPaste } from 'lucide-react';
 
-const functions = getFunctions(app, 'us-central1');
+const FUNCTION_URL =
+  'https://us-central1-rsdlist-e19fe.cloudfunctions.net/importRsdReleases';
 
 interface ImportResult {
   eventId: string;
@@ -79,28 +78,38 @@ export function CreateEventDialog() {
     setLoading(true);
 
     try {
-      const importFn = httpsCallable<
-        {
-          url?: string;
-          pasteData?: string;
-          eventName: string;
-          year: number;
-          season: 'spring' | 'fall';
-          releaseDate: string;
-        },
-        ImportResult
-      >(functions, 'importRsdReleases');
+      const token = await auth.currentUser?.getIdToken();
+      if (!token) {
+        toast.error('You must be signed in');
+        return;
+      }
 
-      const result = await importFn({
-        url: importMode === 'url' ? url : undefined,
-        pasteData: importMode === 'paste' ? pasteData : undefined,
-        eventName,
-        year: yearNum,
-        season,
-        releaseDate,
+      const res = await fetch(FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          data: {
+            url: importMode === 'url' ? url : undefined,
+            pasteData: importMode === 'paste' ? pasteData : undefined,
+            eventName,
+            year: yearNum,
+            season,
+            releaseDate,
+          },
+        }),
       });
 
-      toast.success(result.data.message);
+      const json = await res.json();
+
+      if (!res.ok) {
+        throw new Error(json?.error?.message ?? `Import failed (${res.status})`);
+      }
+
+      const result: ImportResult = json.result;
+      toast.success(result.message);
 
       // Invalidate queries so the new event/releases show up
       await queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -196,8 +205,8 @@ export function CreateEventDialog() {
                 onChange={(e) => setUrl(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Use <code className="font-mono">?view=all</code> to get all releases on one page.
-                If the site blocks scraping (WAF), use the &ldquo;Paste Data&rdquo; tab instead.
+                Use <code className="font-mono">?view=all</code> to get all releases on one page. If
+                the site blocks scraping (WAF), use the &ldquo;Paste Data&rdquo; tab instead.
               </p>
             </TabsContent>
 
