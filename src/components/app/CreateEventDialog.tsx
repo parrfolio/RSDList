@@ -109,8 +109,7 @@ export function CreateEventDialog() {
       resetForm();
       setOpen(false);
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : 'Import failed';
+      const message = err instanceof Error ? err.message : 'Import failed';
       toast.error(message);
     } finally {
       setLoading(false);
@@ -129,8 +128,8 @@ export function CreateEventDialog() {
         <DialogHeader>
           <DialogTitle>Import RSD Releases</DialogTitle>
           <DialogDescription>
-            Create a new RSD event and import releases by scraping the Record
-            Store Day website or pasting the release data.
+            Create a new RSD event and import releases by scraping the Record Store Day website or
+            pasting the release data.
           </DialogDescription>
         </DialogHeader>
 
@@ -157,10 +156,7 @@ export function CreateEventDialog() {
             </div>
             <div className="space-y-1.5">
               <label className="text-sm font-medium">Season *</label>
-              <Select
-                value={season}
-                onValueChange={(v) => setSeason(v as 'spring' | 'fall')}
-              >
+              <Select value={season} onValueChange={(v) => setSeason(v as 'spring' | 'fall')}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -181,10 +177,7 @@ export function CreateEventDialog() {
           </div>
 
           {/* Import mode tabs */}
-          <Tabs
-            value={importMode}
-            onValueChange={(v) => setImportMode(v as 'url' | 'paste')}
-          >
+          <Tabs value={importMode} onValueChange={(v) => setImportMode(v as 'url' | 'paste')}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="url" className="gap-1.5">
                 <Globe className="h-3.5 w-3.5" />
@@ -198,13 +191,13 @@ export function CreateEventDialog() {
 
             <TabsContent value="url" className="space-y-2 pt-2">
               <Input
-                placeholder="https://recordstoreday.com/SpecialReleases"
+                placeholder="https://recordstoreday.com/SpecialReleases?view=all"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
               />
               <p className="text-xs text-muted-foreground">
-                Enter the RSD release list page URL to scrape. If the site
-                blocks scraping, use the "Paste Data" tab instead.
+                Use <code className="font-mono">?view=all</code> to get all releases on one page.
+                If the site blocks scraping (WAF), use the &ldquo;Paste Data&rdquo; tab instead.
               </p>
             </TabsContent>
 
@@ -219,8 +212,8 @@ export function CreateEventDialog() {
                 className="font-mono text-xs"
               />
               <p className="text-xs text-muted-foreground">
-                Paste tab-separated data. Copy the full table from the RSD
-                website (select all rows, Ctrl+C, paste here).
+                Paste tab-separated data. Copy the full table from the RSD website (select all rows,
+                Ctrl+C, paste here).
               </p>
             </TabsContent>
           </Tabs>
@@ -231,19 +224,14 @@ export function CreateEventDialog() {
               {
                 pasteData
                   .split('\n')
-                  .filter((l) => l.trim() && !l.toUpperCase().startsWith('TITLE'))
-                  .length
+                  .filter((l) => l.trim() && !l.toUpperCase().startsWith('TITLE')).length
               }{' '}
               releases detected
             </Badge>
           )}
 
           {/* Action */}
-          <Button
-            className="w-full"
-            onClick={handleImport}
-            disabled={loading}
-          >
+          <Button className="w-full" onClick={handleImport} disabled={loading}>
             {loading ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />

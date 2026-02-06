@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { type User as FirebaseUser } from 'firebase/auth';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
@@ -69,11 +63,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const adminRef = doc(db, 'admins', firebaseUser.email);
-    getDoc(adminRef).then((snap) => {
-      setIsAdmin(snap.exists());
-    }).catch(() => {
-      setIsAdmin(false);
-    });
+    getDoc(adminRef)
+      .then((snap) => {
+        setIsAdmin(snap.exists());
+      })
+      .catch(() => {
+        setIsAdmin(false);
+      });
   }, [firebaseUser]);
 
   return (
