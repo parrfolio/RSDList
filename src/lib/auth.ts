@@ -9,8 +9,9 @@ import {
     type User as FirebaseUser,
     type Unsubscribe,
 } from 'firebase/auth';
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase';
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { auth, db, storage } from '@/lib/firebase';
 import type { User } from '@/types';
 
 const googleProvider = new GoogleAuthProvider();
@@ -48,6 +49,33 @@ export function onAuthChange(callback: (user: FirebaseUser | null) => void): Uns
     return onAuthStateChanged(auth, callback);
 }
 
+/** Update user profile fields in Firestore */
+export async function updateUserProfile(uid: string, data: { displayName?: string; photoURL?: string }) {
+    const userRef = doc(db, 'users', uid);
+    await updateDoc(userRef, { ...data, updatedAt: serverTimestamp() });
+}
+
+/**
+ * Upload an avatar image to Firebase Storage and update the user's photoURL.
+ * Replaces any existing avatar for the user (only one stored at a time).
+ */
+export async function uploadAvatar(uid: string, file: File): Promise<string> {
+    // Always overwrite the same path so there's only one avatar per user
+    const avatarRef = ref(storage, `avatars/${uid}/avatar`);
+
+    // Delete existing avatar if present (ignore errors if none exists)
+    try { await deleteObject(avatarRef); } catch { /* no existing avatar */ }
+
+    // Upload the new file
+    await uploadBytes(avatarRef, file, { contentType: file.type });
+    const downloadURL = await getDownloadURL(avatarRef);
+
+    // Persist the URL to the user's Firestore doc
+    await updateUserProfile(uid, { photoURL: downloadURL });
+
+    return downloadURL;
+}
+
 /** Create user profile document if it doesn't exist */
 async function ensureUserDoc(firebaseUser: FirebaseUser) {
     const userRef = doc(db, 'users', firebaseUser.uid);
@@ -58,6 +86,7 @@ async function ensureUserDoc(firebaseUser: FirebaseUser) {
             uid: firebaseUser.uid,
             displayName: firebaseUser.displayName ?? null,
             email: firebaseUser.email ?? null,
+            photoURL: firebaseUser.photoURL ?? null,
             avatarId: 'vinyl-1',
             authProviders: firebaseUser.providerData.map((p) => p.providerId),
         };

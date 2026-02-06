@@ -13,7 +13,6 @@ import {
 import { db } from '@/lib/firebase';
 import { useAuth } from '@/hooks/useAuth';
 import { buildWantId, type Want, type WantStatus, type Release } from '@/types';
-import { toast } from 'sonner';
 
 /** Fetch all wants for the current user, optionally filtered by event */
 export function useWants(eventId?: string | null) {
@@ -67,10 +66,6 @@ export function useAddWant() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['wants'] });
-            toast.success('Added to your wants list!');
-        },
-        onError: (error) => {
-            toast.error(error.message || 'Failed to add want');
         },
     });
 }
@@ -88,10 +83,6 @@ export function useRemoveWant() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['wants'] });
-            toast.success('Removed from your list');
-        },
-        onError: (error) => {
-            toast.error(error.message || 'Failed to remove');
         },
     });
 }
@@ -117,14 +108,8 @@ export function useToggleWantStatus() {
                 updatedAt: serverTimestamp(),
             });
         },
-        onSuccess: (_, { newStatus }) => {
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['wants'] });
-            toast.success(
-                newStatus === 'ACQUIRED' ? 'Marked as acquired! 🎉' : 'Moved back to wanted',
-            );
-        },
-        onError: (error) => {
-            toast.error(error.message || 'Failed to update');
         },
     });
 }

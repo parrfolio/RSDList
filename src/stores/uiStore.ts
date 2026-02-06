@@ -9,11 +9,15 @@ interface UIState {
     sortOrder: SortOrder;
     searchQuery: string;
     activeEventId: string | null;
+    activeTags: string[];
 
     setViewMode: (mode: ViewMode) => void;
     setSortOrder: (order: SortOrder) => void;
     setSearchQuery: (query: string) => void;
     setActiveEventId: (eventId: string | null) => void;
+    addTag: (tag: string) => void;
+    removeTag: (tag: string) => void;
+    clearTags: () => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -23,11 +27,23 @@ export const useUIStore = create<UIState>()(
             sortOrder: 'ARTIST_ASC',
             searchQuery: '',
             activeEventId: null,
+            activeTags: [],
 
             setViewMode: (mode) => set({ viewMode: mode }),
             setSortOrder: (order) => set({ sortOrder: order }),
             setSearchQuery: (query) => set({ searchQuery: query }),
             setActiveEventId: (eventId) => set({ activeEventId: eventId }),
+            addTag: (tag) =>
+                set((state) => ({
+                    activeTags: state.activeTags.includes(tag)
+                        ? state.activeTags
+                        : [...state.activeTags, tag],
+                })),
+            removeTag: (tag) =>
+                set((state) => ({
+                    activeTags: state.activeTags.filter((t) => t !== tag),
+                })),
+            clearTags: () => set({ activeTags: [] }),
         }),
         {
             name: 'rsd-ui-store',
