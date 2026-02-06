@@ -3,6 +3,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Heart, Check, Disc3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 interface ReleaseCardProps {
   release: Release;
@@ -24,7 +25,8 @@ export function ReleaseCard({
   const isWanted = want?.status === 'WANTED';
   const isAcquired = want?.status === 'ACQUIRED';
 
-  return (
+  retLink to={`/release/${release.releaseId}`} className="block group">
+    <Card className={`overflow-hidden transition-all hover:shadow-md
     <Card className={`overflow-hidden transition-all ${isAcquired ? 'opacity-75' : ''}`}>
       {/* Album art */}
       <div className="aspect-square bg-muted flex items-center justify-center relative">
@@ -79,8 +81,11 @@ export function ReleaseCard({
               <Button
                 size="sm"
                 variant="outline"
-                className="w-full text-xs"
-                onClick={() => onAddWant(release)}
+                className=e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAddWant(release);
+                }}
               >
                 <Heart className="h-3 w-3 mr-1" />
                 Want
@@ -91,7 +96,11 @@ export function ReleaseCard({
                   size="sm"
                   variant="default"
                   className="flex-1 text-xs"
-                  onClick={() => onToggleAcquired(want.wantId, 'ACQUIRED')}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onToggleAcquired(want.wantId, 'ACQUIRED');
+                  }}
                 >
                   <Check className="h-3 w-3 mr-1" />
                   Got It
@@ -100,7 +109,11 @@ export function ReleaseCard({
                   size="sm"
                   variant="ghost"
                   className="text-xs text-muted-foreground"
-                  onClick={() => onRemoveWant(want.wantId)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    onRemoveWant(want.wantId);
+                  }}
                 >
                   ✕
                 </Button>
@@ -110,8 +123,13 @@ export function ReleaseCard({
                 size="sm"
                 variant="secondary"
                 className="w-full text-xs"
-                onClick={() => onToggleAcquired(want.wantId, 'WANTED')}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onToggleAcquired(want.wantId, 'WANTED');
+                }}
               >
+
                 Move back to wanted
               </Button>
             )}

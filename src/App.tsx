@@ -9,6 +9,7 @@ import AuthPage from '@/pages/AuthPage';
 import BrowsePage from '@/pages/BrowsePage';
 import MyListPage from '@/pages/MyListPage';
 import AccountPage from '@/pages/AccountPage';
+import ReleaseDetailPage from '@/pages/ReleaseDetailPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +30,7 @@ function App() {
               <Route path="/auth" element={<AuthPage />} />
               <Route element={<AppLayout />}>
                 <Route index element={<HomePage />} />
+                <Route path="/release/:releaseId" element={<ReleaseDetailPage />} />
                 <Route path="/rsd" element={<BrowsePage />} />
                 <Route path="/mylist" element={<MyListPage />} />
                 <Route path="/account" element={<AccountPage />} />

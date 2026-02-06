@@ -72,11 +72,11 @@ pnpm seed:rsd             # Populate Firestore with release data
 
 ### Key Entities
 
-| Entity | Description |
-|--------|-------------|
+| Entity  | Description                                                                           |
+| ------- | ------------------------------------------------------------------------------------- |
 | Release | RSD special release (artist, title, album art, format, release type, label, quantity) |
-| User | Authenticated user (uid, displayName, email, avatarId, authProviders) |
-| Want | User's saved release with status (WANTED or ACQUIRED) |
+| User    | Authenticated user (uid, displayName, email, avatarId, authProviders)                 |
+| Want    | User's saved release with status (WANTED or ACQUIRED)                                 |
 
 ### Firestore Collections
 
@@ -89,13 +89,13 @@ pnpm seed:rsd             # Populate Firestore with release data
 
 ### Routes
 
-| Route | Description |
-|-------|-------------|
-| `/` | Redirect to `/rsd` |
-| `/auth` | Sign in / sign up |
-| `/rsd` | RSD release list (browsing) |
-| `/mylist` | Wanted + Acquired sections |
-| `/account` | Profile, avatar, sign out |
+| Route      | Description                 |
+| ---------- | --------------------------- |
+| `/`        | Redirect to `/rsd`          |
+| `/auth`    | Sign in / sign up           |
+| `/rsd`     | RSD release list (browsing) |
+| `/mylist`  | Wanted + Acquired sections  |
+| `/account` | Profile, avatar, sign out   |
 
 ### shadcn/ui Components (required)
 
@@ -105,13 +105,13 @@ pnpm seed:rsd             # Populate Firestore with release data
 
 ### App-Level Composed Components
 
-| Component | Purpose |
-|-----------|---------|
-| ReleaseCard | Card + Button + Badge for release display |
-| TopSearchSortBar | Input + DropdownMenu for filtering |
-| BottomTabs | Mobile navigation tabs |
-| SectionHeader | Separator + counts for list sections |
-| EmptyState | Card + text + CTA for empty lists |
+| Component        | Purpose                                   |
+| ---------------- | ----------------------------------------- |
+| ReleaseCard      | Card + Button + Badge for release display |
+| TopSearchSortBar | Input + DropdownMenu for filtering        |
+| BottomTabs       | Mobile navigation tabs                    |
+| SectionHeader    | Separator + counts for list sections      |
+| EmptyState       | Card + text + CTA for empty lists         |
 
 ### Mobile UX Requirements
 
@@ -124,10 +124,10 @@ pnpm seed:rsd             # Populate Firestore with release data
 ### React Query Hooks
 
 ```typescript
-useRsdReleasesQuery({ year, search, sort })  // Fetch releases
-useMyWantsQuery({ year })                     // Fetch user wants
-useToggleWantMutation()                       // Add/remove from wants
-useSetWantStatusMutation()                    // Toggle WANTED ↔ ACQUIRED
+useRsdReleasesQuery({ year, search, sort }); // Fetch releases
+useMyWantsQuery({ year }); // Fetch user wants
+useToggleWantMutation(); // Add/remove from wants
+useSetWantStatusMutation(); // Toggle WANTED ↔ ACQUIRED
 ```
 
 ### Zustand Store (UI State)
@@ -152,7 +152,7 @@ interface UIState {
 ## Assumptions (MVP Scope)
 
 - Both Spring + Fall RSD events supported
-- Event IDs follow pattern: rsd_{year}_{season} (spring/fall)
+- Event IDs follow pattern: rsd*{year}*{season} (spring/fall)
 - Current year releases only
 - Preset avatars only (no upload)
 - No per-item notes, priority, or budget tracking

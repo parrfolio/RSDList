@@ -6,6 +6,7 @@ import { useEvents } from '@/hooks/useEvents';
 import { useUIStore } from '@/stores/uiStore';
 import { ReleaseCard } from '@/components/app/ReleaseCard';
 import { ReleaseListItem } from '@/components/app/ReleaseListItem';
+import { CreateEventDialog } from '@/components/app/CreateEventDialog';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,7 +22,7 @@ import { LayoutGrid, List, ArrowDownAZ, ArrowUpAZ, Search, Disc3 } from 'lucide-
 import { buildWantId, getEventLabel, type Want } from '@/types';
 
 export default function BrowsePage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const {
     viewMode,
     sortOrder,
@@ -104,6 +105,7 @@ export default function BrowsePage() {
         <Badge variant="secondary" className="text-xs">
           {filteredReleases.length} releases
         </Badge>
+        {isAdmin && <CreateEventDialog />}
       </div>
 
       {/* Search + view controls */}
