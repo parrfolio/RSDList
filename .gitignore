@@ -28,6 +28,9 @@ dist/
 # Node
 node_modules/
 
+# Firebase cache
+.firebase/
+
 # Firebase Functions build output
 functions/lib/
 

@@ -6,15 +6,15 @@ import { useAuth } from '@/hooks/useAuth';
  * Wrap protected routes with this component.
  */
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-    const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
-    if (loading) {
-        return null; // Or a loading spinner — auth state is resolving
-    }
+  if (loading) {
+    return null; // Or a loading spinner — auth state is resolving
+  }
 
-    if (!isAuthenticated) {
-        return <Navigate to="/auth" replace />;
-    }
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
 
-    return <>{children}</>;
+  return <>{children}</>;
 }

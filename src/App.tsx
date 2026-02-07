@@ -23,18 +23,32 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <ThemeProvider defaultTheme="system" storageKey="rsd-wants-theme">
+    <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/auth" element={<AuthPage />} />
-              <Route path="/release/:releaseId" element={<ReleaseDetailPage />} />
               <Route element={<AppLayout />}>
                 <Route index element={<HomePage />} />
                 <Route path="/rsd" element={<BrowsePage />} />
-                <Route path="/mylist" element={<ProtectedRoute><MyListPage /></ProtectedRoute>} />
-                <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+                <Route path="/release/:releaseId" element={<ReleaseDetailPage />} />
+                <Route
+                  path="/mylist"
+                  element={
+                    <ProtectedRoute>
+                      <MyListPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/account"
+                  element={
+                    <ProtectedRoute>
+                      <AccountPage />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
             </Routes>
           </BrowserRouter>
