@@ -34,6 +34,7 @@ interface ParsedRelease {
     quantity: number | null;
     detailsUrl: string | null;
     imageUrl: string | null;
+    description: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -189,6 +190,7 @@ async function scrapeReleasesFromUrl(url: string): Promise<ParsedRelease[]> {
                 quantity,
                 detailsUrl,
                 imageUrl,
+                description: null,
             });
         }
     }
@@ -232,11 +234,47 @@ function parseTabSeparatedData(text: string): ParsedRelease[] {
                 quantity,
                 detailsUrl: null,
                 imageUrl: null,
+                description: null,
             });
         }
     }
 
     return releases;
+}
+
+// ---------------------------------------------------------------------------
+// Description cleaner: strip embedded metadata from raw detail-page text
+// ---------------------------------------------------------------------------
+
+/**
+ * Some descriptions contain the full detail-page text dump:
+ * "Title DETAILS Date: ... Format: ... Label: ... Quantity: ... Release type: ... MORE INFO actual description"
+ * This function extracts just the real description.
+ */
+function cleanDescription(raw: string | null | undefined): string | null {
+    if (!raw || !raw.trim()) return null;
+
+    let text = raw.trim();
+
+    // Pattern 1: "MORE INFO" delimiter — everything after it is the real description
+    const moreInfoIdx = text.indexOf('MORE INFO');
+    if (moreInfoIdx !== -1) {
+        text = text.substring(moreInfoIdx + 'MORE INFO'.length).trim();
+    }
+
+    // Pattern 2: Strip leading "TITLE DETAILS" prefix if still present
+    const detailsIdx = text.indexOf('DETAILS');
+    if (detailsIdx !== -1 && detailsIdx < 80) {
+        // Check if there's a "MORE INFO" after DETAILS (shouldn't be if Pattern 1 caught it)
+        text = text.substring(detailsIdx + 'DETAILS'.length).trim();
+    }
+
+    // Pattern 3: Strip leading metadata lines like "Date: ... Format: ... Label: ..."
+    // These follow the pattern "Key: Value" and appear before the actual prose
+    const metadataPattern = /^(Date:\s*[^\n]+\s*)?(Format:\s*[^\n]+\s*)?(Label:\s*[^\n]+\s*)?(Quantity:\s*[^\n]+\s*)?(Release\s*type:\s*[^\n]+\s*)?/i;
+    text = text.replace(metadataPattern, '').trim();
+
+    return text || null;
 }
 
 // ---------------------------------------------------------------------------
@@ -354,7 +392,7 @@ export const importRsdReleases = onCall(
                         quantity: rel.quantity,
                         detailsUrl: rel.detailsUrl,
                         imageUrl: rel.imageUrl,
-                        description: null,
+                        description: cleanDescription(rel.description),
                         createdAt: FieldValue.serverTimestamp(),
                         updatedAt: FieldValue.serverTimestamp(),
                     },

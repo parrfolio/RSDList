@@ -77,9 +77,9 @@ export async function setDocument<T extends DocumentData>(
     const payload = {
         ...data,
         updatedAt: serverTimestamp(),
-        ...(!options?.merge ? { createdAt: serverTimestamp() } : {}),
+        ...(!(options as Record<string, unknown>)?.merge ? { createdAt: serverTimestamp() } : {}),
     } as WithFieldValue<T>;
-    await firestoreSetDoc(ref, payload, options ?? {});
+    await firestoreSetDoc(ref as DocumentReference<T>, payload, options ?? {});
 }
 
 /** Update fields on an existing document. */

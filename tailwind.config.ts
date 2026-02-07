@@ -18,8 +18,10 @@ const config: Config = {
         extend: {
             fontFamily: {
                 sans: [
-                    'Geist',
+                    'Avenir Next',
                     'system-ui',
+                    '-apple-system',
+                    'BlinkMacSystemFont',
                     'sans-serif'
                 ],
                 mono: [

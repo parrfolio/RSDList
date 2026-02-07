@@ -8,12 +8,14 @@ interface UIState {
     viewMode: ViewMode;
     sortOrder: SortOrder;
     searchQuery: string;
+    searchFocused: boolean;
     activeEventId: string | null;
     activeTags: string[];
 
     setViewMode: (mode: ViewMode) => void;
     setSortOrder: (order: SortOrder) => void;
     setSearchQuery: (query: string) => void;
+    setSearchFocused: (focused: boolean) => void;
     setActiveEventId: (eventId: string | null) => void;
     addTag: (tag: string) => void;
     removeTag: (tag: string) => void;
@@ -26,12 +28,14 @@ export const useUIStore = create<UIState>()(
             viewMode: 'GRID',
             sortOrder: 'ARTIST_ASC',
             searchQuery: '',
+            searchFocused: false,
             activeEventId: null,
             activeTags: [],
 
             setViewMode: (mode) => set({ viewMode: mode }),
             setSortOrder: (order) => set({ sortOrder: order }),
             setSearchQuery: (query) => set({ searchQuery: query }),
+            setSearchFocused: (focused) => set({ searchFocused: focused }),
             setActiveEventId: (eventId) => set({ activeEventId: eventId }),
             addTag: (tag) =>
                 set((state) => ({
