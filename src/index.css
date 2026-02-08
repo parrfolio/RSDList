@@ -110,3 +110,15 @@
   width: 0;
   height: 0;
 }
+
+/* Album grid: 2 cols on mobile, auto-fill up to 226px on wider screens */
+.grid-albums {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+@media (min-width: 640px) {
+  .grid-albums {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 226px));
+  }
+}
