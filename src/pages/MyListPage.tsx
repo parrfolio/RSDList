@@ -139,7 +139,7 @@ export default function MyListPage() {
 
       {/* Loading skeleton */}
       {isLoading && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 226px))' }}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="space-y-2">
               <Skeleton className="aspect-square rounded-lg bg-[#1e1e1e]" />
@@ -161,7 +161,7 @@ export default function MyListPage() {
 
       {/* Grid view */}
       {!isLoading && viewMode === 'GRID' && wantedReleases.length > 0 && (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 226px))' }}>
           {wantedReleases.map((release) => (
             <ReleaseCard
               key={release.releaseId}

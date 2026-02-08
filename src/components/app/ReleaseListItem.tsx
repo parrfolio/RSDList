@@ -3,6 +3,7 @@ import type { Release, Want } from '@/types';
 import { useNavigate } from 'react-router-dom';
 import { fixTitleArtist, cleanDescription, getProseOnly } from '@/lib/releaseUtils';
 import heartIcon from '@/images/heart.svg';
+import { StatusCircleIcon } from '@/components/app/StatusCircleIcon';
 
 interface ReleaseListItemProps {
   release: Release;
@@ -69,9 +70,10 @@ export function ReleaseListItem({
         {onToggleStatus && want && (
           <button
             type="button"
-            className={`flex-shrink-0 flex items-center gap-1.5 rounded-full px-3 py-1.5 border transition-colors ${
+            className={`flex-shrink-0 flex items-center gap-1.5 rounded-full py-1.5 border transition-colors ${
               want.status === 'ACQUIRED' ? 'border-[#E8A530]' : 'border-[#555]'
             }`}
+            style={{ paddingLeft: '0.375rem', paddingRight: 0, minWidth: 95 }}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -80,46 +82,8 @@ export function ReleaseListItem({
             }}
             aria-label={want.status === 'ACQUIRED' ? 'Mark as wanted' : 'Mark as got it'}
           >
-            {/* Circle icon */}
-            <span
-              className={`flex items-center justify-center w-5 h-5 rounded-full ${
-                want.status === 'ACQUIRED' ? 'bg-[#E8A530]' : 'bg-[#555]'
-              }`}
-            >
-              {want.status === 'ACQUIRED' ? (
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 10 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 2L5 8M5 8L2 5M5 8L8 5"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 10 10"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M5 8L5 2M5 2L2 5M5 2L8 5"
-                    stroke="white"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              )}
-            </span>
+            {/* Radio circle icon */}
+            <StatusCircleIcon selected={want.status === 'ACQUIRED'} className="w-5 h-5" />
             {/* Label */}
             <span
               className={`text-xs font-semibold whitespace-nowrap ${

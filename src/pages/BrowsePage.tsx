@@ -321,7 +321,7 @@ export default function BrowsePage() {
 
           {/* Grid view */}
           {!isLoading && viewMode === 'GRID' && filteredReleases.length > 0 && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 226px))' }}>
               {filteredReleases.map((release) => (
                 <ReleaseCard
                   key={release.releaseId}
