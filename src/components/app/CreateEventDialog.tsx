@@ -3,6 +3,7 @@ import { functions } from '@/lib/firebase';
 import { httpsCallable } from 'firebase/functions';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
+import { friendlyError } from '@/lib/errorMessages';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +26,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Plus, Loader2, Globe, ClipboardPaste } from 'lucide-react';
 
-const importRsdReleases = httpsCallable<ImportRequest, ImportResult>(functions, 'importRsdReleases');
+const importRsdReleases = httpsCallable<ImportRequest, ImportResult>(
+  functions,
+  'importRsdReleases'
+);
 
 interface ImportResult {
   eventId: string;
@@ -105,8 +109,7 @@ export function CreateEventDialog() {
       resetForm();
       setOpen(false);
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Import failed';
-      toast.error(message);
+      toast.error(friendlyError(err, 'Import failed'));
     } finally {
       setLoading(false);
     }

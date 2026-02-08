@@ -177,6 +177,7 @@ function formatDescription(raw: string | null): { prose: string | null; trackLis
 export default function ReleaseDetailPage() {
   const { releaseId } = useParams<{ releaseId: string }>();
   const navigate = useNavigate();
+
   const { data: release, isLoading } = useRelease(releaseId);
   const { isAuthenticated } = useAuth();
   const { data: wants } = useWants(release?.eventId);

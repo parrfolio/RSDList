@@ -1,7 +1,8 @@
-import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate, ScrollRestoration } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useWants } from '@/hooks/useWants';
 import { useUIStore } from '@/stores/uiStore';
+import { User } from 'lucide-react';
 import albumsIcon from '@/images/albums.svg';
 import searchIcon from '@/images/search.svg';
 import listIcon from '@/images/list.svg';
@@ -9,36 +10,40 @@ import listIcon from '@/images/list.svg';
 export function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
-  const { activeEventId, setSearchQuery, setSearchFocused } = useUIStore();
+  const { isAuthenticated, user, firebaseUser } = useAuth();
+  const { activeEventId, searchFocused, setSearchQuery, setSearchFocused } = useUIStore();
   const { data: wants } = useWants(activeEventId);
   const wantCount = isAuthenticated ? (wants?.length ?? 0) : 0;
 
-  const isRsdActive =
-    (location.pathname === '/rsd' || location.pathname === '/') &&
-    !useUIStore.getState().searchFocused;
-  const isSearchActive = useUIStore.getState().searchFocused;
+  const isRsdActive = (location.pathname === '/rsd' || location.pathname === '/') && !searchFocused;
+  const isSearchActive =
+    searchFocused && (location.pathname === '/rsd' || location.pathname === '/');
   const isMyListActive = location.pathname === '/mylist';
+  const isAccountActive = location.pathname === '/account';
+
+  const photoURL = user?.photoURL ?? firebaseUser?.photoURL ?? null;
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Main content — full bleed, padded at bottom for nav */}
+      <ScrollRestoration />
       <main className="flex-1 pb-20">
         <Outlet />
       </main>
 
-      {/* Fixed bottom navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-[#2a2a2a] bg-[#121212]">
-        <div className="flex items-center justify-around h-16">
+        <div className="h-16" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr' }}>
           <NavItem
-            to="/rsd"
             icon={albumsIcon}
             label="RSD"
             active={isRsdActive}
-            onClick={() => setSearchFocused(false)}
+            onClick={() => {
+              setSearchQuery('');
+              setSearchFocused(false);
+              navigate('/rsd');
+              window.scrollTo(0, 0);
+            }}
           />
           <NavItem
-            to="/rsd"
             icon={searchIcon}
             label="Search"
             active={isSearchActive}
@@ -51,12 +56,32 @@ export function AppLayout() {
             }}
           />
           <NavItem
-            to="/mylist"
             icon={listIcon}
             label="Your List"
             active={isMyListActive}
             badge={wantCount}
+            onClick={() => navigate('/mylist')}
           />
+          <button
+            type="button"
+            className="flex flex-col items-center justify-center"
+            onClick={() => navigate('/account')}
+            aria-label="Account"
+          >
+            {photoURL ? (
+              <img
+                src={photoURL}
+                alt="Profile"
+                className="h-6 w-6 rounded-full object-cover"
+                style={isAccountActive ? { boxShadow: '0 0 0 2px #E8A530' } : undefined}
+              />
+            ) : (
+              <User
+                className="h-5 w-5"
+                style={{ color: isAccountActive ? '#FFFFFF' : '#777777' }}
+              />
+            )}
+          </button>
         </div>
       </nav>
     </div>
@@ -64,35 +89,29 @@ export function AppLayout() {
 }
 
 function NavItem({
-  to,
   icon,
   label,
   active,
   badge,
   onClick,
 }: {
-  to: string;
   icon: string;
   label: string;
   active: boolean;
   badge?: number;
-  onClick?: () => void;
+  onClick: () => void;
 }) {
   return (
-    <NavLink
-      to={to}
-      className="flex flex-col items-center gap-1 px-4 py-2 relative"
-      onClick={() => {
-        if (onClick) {
-          onClick();
-        }
-      }}
+    <button
+      type="button"
+      className="flex flex-col items-center justify-center gap-1 relative"
+      onClick={onClick}
     >
-      <div className="relative">
+      <div className="relative w-5 h-5">
         <img
           src={icon}
           alt={label}
-          className="h-5 w-5"
+          className="w-5 h-5"
           style={active ? { filter: 'brightness(0) invert(1)' } : undefined}
         />
         {badge != null && badge > 0 && (
@@ -107,6 +126,6 @@ function NavItem({
       <span className="text-[10px] font-semibold" style={{ color: active ? '#FFFFFF' : '#777777' }}>
         {label}
       </span>
-    </NavLink>
+    </button>
   );
 }

@@ -9,11 +9,11 @@ import { ReleaseCard } from '@/components/app/ReleaseCard';
 import { ReleaseListItem } from '@/components/app/ReleaseListItem';
 import { CreateEventDialog } from '@/components/app/CreateEventDialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { BuyMeCoffee } from '@/components/app/BuyMeCoffee';
 import { buildWantId, getEventLabel, parseEventId, type Want } from '@/types';
 
 import albumViewIcon from '@/images/album-view.svg';
 import listViewIcon from '@/images/list-view.svg';
-import settingsIcon from '@/images/settings.svg';
 
 /** Short header label: "RSD 2026" or "RSD BF 2025" */
 function getShortEventLabel(eventId: string): string {
@@ -164,19 +164,6 @@ export default function BrowsePage() {
               style={viewMode === 'LIST' ? { filter: 'brightness(0) invert(1)' } : { opacity: 0.5 }}
             />
           </button>
-
-          {/* Spacer */}
-          <div className="w-2" />
-
-          {/* Settings gear */}
-          <button
-            type="button"
-            onClick={() => navigate('/account')}
-            aria-label="Settings"
-            className="p-1"
-          >
-            <img src={settingsIcon} alt="Settings" className="h-5 w-5" style={{ opacity: 0.5 }} />
-          </button>
         </div>
       </header>
 
@@ -211,6 +198,7 @@ export default function BrowsePage() {
           <p className="text-[#B3B3B3] text-sm leading-relaxed">
             Search for your favorite RSD release and add it to your want list!
           </p>
+          <BuyMeCoffee />
         </div>
       )}
 

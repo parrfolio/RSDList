@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { Release, Want } from '@/types';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fixTitleArtist, cleanDescription, getProseOnly } from '@/lib/releaseUtils';
 import heartIcon from '@/images/heart.svg';
 
@@ -23,13 +23,20 @@ export function ReleaseListItem({
 }: ReleaseListItemProps) {
   const hasWant = !!want && (want.status === 'WANTED' || want.status === 'ACQUIRED');
   const { title, artist } = fixTitleArtist(release.title, release.artist);
+  const navigate = useNavigate();
   const description = useMemo(
     () => getProseOnly(cleanDescription(release.description)),
     [release.description]
   );
 
   return (
-    <Link to={`/release/${release.releaseId}`} className="block group">
+    <div
+      className="block group cursor-pointer"
+      role="link"
+      tabIndex={0}
+      onClick={() => navigate(`/release/${release.releaseId}`)}
+      onKeyDown={(e) => e.key === 'Enter' && navigate(`/release/${release.releaseId}`)}
+    >
       <div className="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-[#1e1e1e]">
         {/* Thumbnail */}
         <div className="h-16 w-16 rounded-md bg-[#1e1e1e] flex-shrink-0 overflow-hidden">
@@ -159,6 +166,6 @@ export function ReleaseListItem({
           </button>
         )}
       </div>
-    </Link>
+    </div>
   );
 }

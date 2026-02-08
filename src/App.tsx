@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/hooks/useAuth';
@@ -21,37 +21,43 @@ const queryClient = new QueryClient({
   },
 });
 
+const router = createBrowserRouter([
+  {
+    path: '/auth',
+    element: <AuthPage />,
+  },
+  {
+    element: <AppLayout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: '/rsd', element: <BrowsePage /> },
+      { path: '/release/:releaseId', element: <ReleaseDetailPage /> },
+      {
+        path: '/mylist',
+        element: (
+          <ProtectedRoute>
+            <MyListPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/account',
+        element: (
+          <ProtectedRoute>
+            <AccountPage />
+          </ProtectedRoute>
+        ),
+      },
+    ],
+  },
+]);
+
 function App() {
   return (
     <ThemeProvider>
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/auth" element={<AuthPage />} />
-              <Route element={<AppLayout />}>
-                <Route index element={<HomePage />} />
-                <Route path="/rsd" element={<BrowsePage />} />
-                <Route path="/release/:releaseId" element={<ReleaseDetailPage />} />
-                <Route
-                  path="/mylist"
-                  element={
-                    <ProtectedRoute>
-                      <MyListPage />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/account"
-                  element={
-                    <ProtectedRoute>
-                      <AccountPage />
-                    </ProtectedRoute>
-                  }
-                />
-              </Route>
-            </Routes>
-          </BrowserRouter>
+          <RouterProvider router={router} />
           <Toaster position="top-center" richColors closeButton />
         </AuthProvider>
       </QueryClientProvider>

@@ -1,5 +1,5 @@
 import type { Release, Want } from '@/types';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { fixTitleArtist } from '@/lib/releaseUtils';
 import heartIcon from '@/images/heart.svg';
 
@@ -22,11 +22,18 @@ export function ReleaseCard({
 }: ReleaseCardProps) {
   const hasWant = !!want && (want.status === 'WANTED' || want.status === 'ACQUIRED');
   const { title, artist } = fixTitleArtist(release.title, release.artist);
+  const navigate = useNavigate();
 
   return (
     <div className="group">
       {/* Album art — links to detail page */}
-      <Link to={`/release/${release.releaseId}`} className="block">
+      <div
+        className="block cursor-pointer"
+        role="link"
+        tabIndex={0}
+        onClick={() => navigate(`/release/${release.releaseId}`)}
+        onKeyDown={(e) => e.key === 'Enter' && navigate(`/release/${release.releaseId}`)}
+      >
         <div className="aspect-square rounded-lg overflow-hidden bg-[#1e1e1e] relative">
           {release.imageUrl ? (
             <img
@@ -41,7 +48,7 @@ export function ReleaseCard({
             </div>
           )}
         </div>
-      </Link>
+      </div>
 
       {/* Title + Artist + heart */}
       <div className="flex items-start gap-1.5 mt-1.5">

@@ -6,48 +6,15 @@ import { useAuth } from '@/hooks/useAuth';
 import { useWants } from '@/hooks/useWants';
 import { useUIStore } from '@/stores/uiStore';
 import { signOut, updateUserProfile, uploadAvatar } from '@/lib/auth';
+import { readFileAsDataURL, getCroppedBlob } from '@/lib/cropUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { User, Camera, Pencil, LogOut, Check, Loader2, X } from 'lucide-react';
-
-/** Convert a File to a data URL for the cropper preview */
-function readFileAsDataURL(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-/** Crop an image data URL to the given pixel area, returning a Blob */
-async function getCroppedBlob(imageSrc: string, crop: Area): Promise<Blob> {
-  const image = new Image();
-  image.crossOrigin = 'anonymous';
-  await new Promise<void>((res, rej) => {
-    image.onload = () => res();
-    image.onerror = rej;
-    image.src = imageSrc;
-  });
-
-  const canvas = document.createElement('canvas');
-  const size = Math.min(crop.width, crop.height);
-  // Output a 512×512 avatar
-  canvas.width = 512;
-  canvas.height = 512;
-  const ctx = canvas.getContext('2d')!;
-  ctx.drawImage(image, crop.x, crop.y, size, size, 0, 0, 512, 512);
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error('Canvas toBlob failed'))),
-      'image/jpeg',
-      0.9
-    );
-  });
-}
+import { BuyMeCoffee } from '@/components/app/BuyMeCoffee';
+import { friendlyError } from '@/lib/errorMessages';
+import { toast } from 'sonner';
 
 export default function AccountPage() {
   const { user, firebaseUser } = useAuth();
@@ -126,7 +93,7 @@ export default function AccountPage() {
       await uploadAvatar(firebaseUser.uid, file);
       setImgError(false);
     } catch (err) {
-      console.error('Avatar upload failed:', err);
+      toast.error(friendlyError(err, 'Avatar upload failed. Please try again.'));
     } finally {
       setIsUploading(false);
       setCropSrc(null);
@@ -144,7 +111,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="px-4 pt-4 pb-4 space-y-6">
       <h2 className="text-2xl font-bold">Account</h2>
 
       <Card>
@@ -239,6 +206,8 @@ export default function AccountPage() {
         <LogOut className="h-4 w-4 mr-2" />
         Sign Out
       </Button>
+
+      <BuyMeCoffee />
 
       {/* Fullscreen crop overlay */}
       {cropSrc && (
