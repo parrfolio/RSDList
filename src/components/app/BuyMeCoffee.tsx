@@ -6,12 +6,10 @@ export function BuyMeCoffee() {
         href="https://www.buymeacoffee.com/9ttv1rh"
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition-colors"
+        className="inline-flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-bold transition-colors"
         style={{
           backgroundColor: '#FFDD00',
           color: '#000000',
-          fontFamily: 'Cookie, cursive',
-          fontSize: '16px',
         }}
       >
         <img
