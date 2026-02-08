@@ -1,5 +1,4 @@
 import { useMemo, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useReleases } from '@/hooks/useReleases';
 import { useWants, useAddWant, useRemoveWant } from '@/hooks/useWants';
@@ -22,7 +21,6 @@ function getShortEventLabel(eventId: string): string {
 }
 
 export default function BrowsePage() {
-  const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const { isAuthenticated, isAdmin } = useAuth();
