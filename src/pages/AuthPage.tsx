@@ -750,11 +750,18 @@ export default function AuthPage() {
           </button>
           <p className="text-[11px] text-white/40 text-center leading-snug max-w-[280px]">
             By signing up, you agree to the{' '}
-            <Link to="/legal/terms" className="underline hover:text-white/60">Terms of Service</Link>{' '}
+            <Link to="/legal/terms" className="underline hover:text-white/60">
+              Terms of Service
+            </Link>{' '}
             and{' '}
-            <Link to="/legal/privacy" className="underline hover:text-white/60">Privacy Policy</Link>,
-            including{' '}
-            <Link to="/legal/cookies" className="underline hover:text-white/60">cookie use</Link>.
+            <Link to="/legal/privacy" className="underline hover:text-white/60">
+              Privacy Policy
+            </Link>
+            , including{' '}
+            <Link to="/legal/cookies" className="underline hover:text-white/60">
+              cookie use
+            </Link>
+            .
           </p>
           <p className="text-[11px] text-white/40 text-center leading-snug max-w-[280px]">
             This app is not affiliated with, endorsed by, or associated with Record Store Day or

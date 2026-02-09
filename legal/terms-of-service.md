@@ -109,4 +109,4 @@ Email: [parrfolio@gmail.com](mailto:parrfolio@gmail.com)
 
 ---
 
-*Last updated: February 9, 2026*
+_Last updated: February 9, 2026_
