@@ -104,7 +104,6 @@ These terms are governed by the laws of the United States. Any disputes will be 
 
 If you have questions about these terms, contact:
 
-**Ryan Parr**
 Email: [parrfolio@gmail.com](mailto:parrfolio@gmail.com)
 
 ---

@@ -99,7 +99,6 @@ We may update this Cookie Policy if our use of cookies changes. Updates will be 
 
 If you have questions about this Cookie Policy, contact:
 
-**Ryan Parr**
 Email: [parrfolio@gmail.com](mailto:parrfolio@gmail.com)
 
 ---

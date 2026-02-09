@@ -147,7 +147,6 @@ For significant changes, we will make reasonable efforts to notify users (such a
 
 If you have questions about this Privacy Policy or want to exercise your data rights, contact:
 
-**Ryan Parr**
 Email: [parrfolio@gmail.com](mailto:parrfolio@gmail.com)
 
 ---

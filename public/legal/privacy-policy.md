@@ -20,14 +20,14 @@ RSD List is a free web app for Record Store Day collectors, built and operated b
 
 When you sign in, we receive and store:
 
-| Data Field | Source | Purpose |
-|---|---|---|
-| User ID (uid) | Firebase Auth | Unique account identifier |
-| Display name | Auth provider (Google/Facebook) or you | Shown on your profile and shared list |
-| Email address | Auth provider or you | Account identification |
-| Profile photo URL | Auth provider | Default avatar display |
-| Auth providers | Firebase Auth | Tracks which sign-in methods you use |
-| Avatar ID | Your selection | Your chosen preset avatar |
+| Data Field        | Source                                 | Purpose                               |
+| ----------------- | -------------------------------------- | ------------------------------------- |
+| User ID (uid)     | Firebase Auth                          | Unique account identifier             |
+| Display name      | Auth provider (Google/Facebook) or you | Shown on your profile and shared list |
+| Email address     | Auth provider or you                   | Account identification                |
+| Profile photo URL | Auth provider                          | Default avatar display                |
+| Auth providers    | Firebase Auth                          | Tracks which sign-in methods you use  |
+| Avatar ID         | Your selection                         | Your chosen preset avatar             |
 
 ### 2.2 User Content
 
@@ -147,9 +147,8 @@ For significant changes, we will make reasonable efforts to notify users (such a
 
 If you have questions about this Privacy Policy or want to exercise your data rights, contact:
 
-**Ryan Parr**
 Email: [parrfolio@gmail.com](mailto:parrfolio@gmail.com)
 
 ---
 
-*Last updated: February 9, 2026*
+_Last updated: February 9, 2026_
