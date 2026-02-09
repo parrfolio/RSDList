@@ -737,7 +737,7 @@ export default function AuthPage() {
         )}
 
         {/* Bottom spacer + Log in link */}
-        <div className="flex-[2] flex items-end justify-center pb-12">
+        <div className="flex-[2] flex flex-col items-center justify-end pb-8 gap-4">
           <button
             type="button"
             onClick={() => {
@@ -748,6 +748,9 @@ export default function AuthPage() {
           >
             Log in
           </button>
+          <p className="text-[11px] text-white/40 text-center leading-snug max-w-[280px]">
+            This app is not affiliated with, endorsed by, or associated with Record Store Day or recordstoreday.com.
+          </p>
         </div>
       </div>
     </div>
