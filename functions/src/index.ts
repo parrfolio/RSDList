@@ -1,7 +1,9 @@
-import { onCall, HttpsError } from 'firebase-functions/v2/https';
+import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import * as cheerio from 'cheerio';
+import * as fs from 'fs';
+import * as path from 'path';
 
 initializeApp();
 const db = getFirestore();
@@ -412,3 +414,130 @@ export const importRsdReleases = onCall(
         };
     },
 );
+
+// ---------------------------------------------------------------------------
+// Cloud Function: sharedListMeta
+// Serves index.html with dynamic OG meta tags for /shared/:shareId URLs.
+// Social-media crawlers see personalised titles; browsers get the SPA.
+// ---------------------------------------------------------------------------
+
+const BASE_URL = 'https://rsdlist-e19fe.web.app';
+
+export const sharedListMeta = onRequest(
+    { region: 'us-central1' },
+    async (req, res) => {
+        // Extract shareId from the path: /shared/<shareId>
+        const segments = req.path.replace(/^\/+|\/+$/g, '').split('/');
+        // Expected: ["shared", "<shareId>"] or just ["<shareId>"] depending on rewrite
+        const shareId = segments[segments.length - 1];
+
+        // Default meta values (fallback)
+        let ogTitle = 'Create your RSD 2026 wants list!';
+        let ogDescription =
+            'Build your Record Store Day 2026 list, mark what you\'ve found, and share it with friends.';
+
+        if (shareId && shareId !== 'shared') {
+            try {
+                const shareDoc = await db.collection('shares').doc(shareId).get();
+                if (shareDoc.exists) {
+                    const data = shareDoc.data();
+                    const ownerName = data?.ownerName ?? '';
+                    const listName = data?.listName ?? '';
+                    if (ownerName && listName) {
+                        ogTitle = `${ownerName} shared "${listName}" from RSDList.com`;
+                        ogDescription = `Check out ${ownerName}'s Record Store Day wants list on RSDList.com`;
+                    }
+                }
+            } catch (err) {
+                console.error('Error fetching share doc for meta tags:', err);
+                // Fall through to defaults
+            }
+        }
+
+        const ogImage = `${BASE_URL}/rsdlist.png`;
+        const ogUrl = `${BASE_URL}/shared/${shareId}`;
+
+        // Read the built index.html (copied into lib/ at deploy time)
+        let html: string;
+        try {
+            const indexPath = path.join(__dirname, 'index.html');
+            html = fs.readFileSync(indexPath, 'utf-8');
+        } catch {
+            // Fallback: serve a minimal HTML shell that redirects to the SPA
+            html = `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${escapeHtml(ogTitle)}</title>
+    <meta name="title" content="${escapeHtml(ogTitle)}" />
+    <meta name="description" content="${escapeHtml(ogDescription)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${ogUrl}" />
+    <meta property="og:title" content="${escapeHtml(ogTitle)}" />
+    <meta property="og:description" content="${escapeHtml(ogDescription)}" />
+    <meta property="og:image" content="${ogImage}" />
+    <meta property="og:image:width" content="2048" />
+    <meta property="og:image:height" content="1536" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="${ogUrl}" />
+    <meta property="twitter:title" content="${escapeHtml(ogTitle)}" />
+    <meta property="twitter:description" content="${escapeHtml(ogDescription)}" />
+    <meta property="twitter:image" content="${ogImage}" />
+    <meta http-equiv="refresh" content="0;url=${ogUrl}" />
+  </head>
+  <body></body>
+</html>`;
+            res.status(200).set('Content-Type', 'text/html').send(html);
+            return;
+        }
+
+        // Replace static meta tags with dynamic ones
+        html = html.replace(
+            /<meta name="title"[^>]*>/,
+            `<meta name="title" content="${escapeHtml(ogTitle)}" />`,
+        );
+        html = html.replace(
+            /<meta name="description"[^>]*>/,
+            `<meta name="description" content="${escapeHtml(ogDescription)}" />`,
+        );
+
+        // OG tags
+        html = html.replace(
+            /<meta property="og:url"[^>]*>/,
+            `<meta property="og:url" content="${ogUrl}" />`,
+        );
+        html = html.replace(
+            /<meta property="og:title"[^>]*>/,
+            `<meta property="og:title" content="${escapeHtml(ogTitle)}" />`,
+        );
+        html = html.replace(
+            /<meta property="og:description"[^>]*>/,
+            `<meta property="og:description" content="${escapeHtml(ogDescription)}" />`,
+        );
+
+        // Twitter tags
+        html = html.replace(
+            /<meta property="twitter:url"[^>]*>/,
+            `<meta property="twitter:url" content="${ogUrl}" />`,
+        );
+        html = html.replace(
+            /<meta property="twitter:title"[^>]*>/,
+            `<meta property="twitter:title" content="${escapeHtml(ogTitle)}" />`,
+        );
+        html = html.replace(
+            /<meta property="twitter:description"[^>]*>/,
+            `<meta property="twitter:description" content="${escapeHtml(ogDescription)}" />`,
+        );
+
+        res.status(200).set('Content-Type', 'text/html').send(html);
+    },
+);
+
+function escapeHtml(str: string): string {
+    return str
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+}

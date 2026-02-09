@@ -4,6 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "tsc",
+        "copy-index": "cp ../dist/index.html lib/index.html",
+        "predeploy": "npm run build && npm run copy-index",
         "serve": "npm run build && firebase emulators:start --only functions",
         "deploy": "firebase deploy --only functions"
     },
