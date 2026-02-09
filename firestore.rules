@@ -14,6 +14,11 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
+    // Helper: check if the user has sharing enabled
+    function isSharingEnabled(uid) {
+      return get(/databases/$(database)/documents/users/$(uid)).data.sharingEnabled == true;
+    }
+
     // Admins collection: only readable by the user checking their own email, writable by no one (admin SDK only)
     match /admins/{email} {
       allow read: if request.auth != null && request.auth.token.email == email;
@@ -37,18 +42,18 @@ service cloud.firestore {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid)
         && request.resource.data.keys().hasOnly(
-          ['uid', 'displayName', 'email', 'photoURL', 'avatarId', 'authProviders', 'createdAt', 'updatedAt']
+          ['uid', 'displayName', 'email', 'photoURL', 'avatarId', 'authProviders', 'shareId', 'sharingEnabled', 'createdAt', 'updatedAt']
         )
         && request.resource.data.uid == uid;
       allow update: if isOwner(uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
-          ['displayName', 'photoURL', 'avatarId', 'updatedAt']
+          ['displayName', 'photoURL', 'avatarId', 'shareId', 'sharingEnabled', 'updatedAt']
         );
       allow delete: if false;
 
-      // Wants subcollection: readable/writable by owner only with field validation
+      // Wants subcollection: readable/writable by owner, readable if sharing is enabled
       match /wants/{wantId} {
-        allow read: if isOwner(uid);
+        allow read: if isOwner(uid) || isSharingEnabled(uid);
         allow create: if isOwner(uid)
           && request.resource.data.keys().hasOnly(
             ['wantId', 'eventId', 'releaseId', 'artist', 'title', 'imageUrl', 'format', 'releaseType', 'status', 'addedAt', 'acquiredAt', 'updatedAt']
@@ -61,6 +66,23 @@ service cloud.firestore {
           && request.resource.data.status in ['WANTED', 'ACQUIRED'];
         allow delete: if isOwner(uid);
       }
+    }
+
+    // Shares collection: publicly readable, owner-writable
+    match /shares/{shareId} {
+      allow read: if true;
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(
+          ['shareId', 'uid', 'ownerName', 'listName', 'createdAt', 'updatedAt']
+        );
+      allow update: if request.auth != null
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['ownerName', 'listName', 'updatedAt']
+        );
+      allow delete: if request.auth != null
+        && resource.data.uid == request.auth.uid;
     }
 
     // Deny all other paths by default

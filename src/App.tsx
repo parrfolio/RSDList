@@ -11,6 +11,7 @@ import BrowsePage from '@/pages/BrowsePage';
 import MyListPage from '@/pages/MyListPage';
 import AccountPage from '@/pages/AccountPage';
 import ReleaseDetailPage from '@/pages/ReleaseDetailPage';
+import SharedListPage from '@/pages/SharedListPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,6 +26,11 @@ const router = createBrowserRouter([
   {
     path: '/auth',
     element: <AuthPage />,
+  },
+  {
+    path: '/shared/:shareId',
+    element: <AppLayout />,
+    children: [{ index: true, element: <SharedListPage /> }],
   },
   {
     element: <AppLayout />,

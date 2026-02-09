@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useWants, useAddWant, useRemoveWant, useToggleWantStatus } from '@/hooks/useWants';
@@ -6,15 +6,18 @@ import { useReleases } from '@/hooks/useReleases';
 import { useUIStore } from '@/stores/uiStore';
 import { ReleaseCard } from '@/components/app/ReleaseCard';
 import { ReleaseListItem } from '@/components/app/ReleaseListItem';
+import { ShareListDialog } from '@/components/app/ShareListDialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { buildWantId } from '@/types';
 import type { Release, Want } from '@/types';
+import shareIcon from '@/images/share.svg';
 
 import albumViewIcon from '@/images/album-view.svg';
 import listViewIcon from '@/images/list-view.svg';
 
 export default function MyListPage() {
   const { isAuthenticated } = useAuth();
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const { activeEventId, viewMode, sortOrder, setViewMode } = useUIStore();
   const { data: wants, isLoading: wantsLoading } = useWants(activeEventId);
   const { data: releases, isLoading: releasesLoading } = useReleases(activeEventId);
@@ -105,6 +108,16 @@ export default function MyListPage() {
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Share button */}
+          <button
+            type="button"
+            onClick={() => setShareDialogOpen(true)}
+            aria-label="Share list"
+            className="p-1"
+          >
+            <img src={shareIcon} alt="Share list" className="h-5 w-5" style={{ opacity: 0.5 }} />
+          </button>
+
           {/* Album (grid) view toggle */}
           <button
             type="button"
@@ -192,6 +205,8 @@ export default function MyListPage() {
           ))}
         </div>
       )}
+
+      <ShareListDialog open={shareDialogOpen} onOpenChange={setShareDialogOpen} />
     </div>
   );
 }

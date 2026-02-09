@@ -683,11 +683,12 @@ export default function AuthPage() {
         </div>
 
         {/* Tagline */}
-        <h1 className="text-[28px] leading-tight font-bold text-center">
-          Your Record
-          <br />
-          Store Day List!
+        <h1 className="text-[22px] leading-tight font-bold text-center">
+          Create your RSD 2026 wants list!
         </h1>
+        <p className="text-sm text-[#B3B3B3] text-center mt-2">
+          Build your Record Store Day 2026 list, mark what you've found, and share it with friends.
+        </p>
 
         {/* Buttons area */}
         <div className="flex flex-col gap-3 mt-8">

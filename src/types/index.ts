@@ -14,3 +14,6 @@ export {
 export { ReleaseSchema } from './release';
 export { UserSchema } from './user';
 export { WantStatusSchema, WantSchema, buildWantId } from './want';
+
+export type { ShareInfo } from './sharedList';
+export { ShareInfoSchema } from './sharedList';

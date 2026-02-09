@@ -7,6 +7,8 @@ export const UserSchema = z.object({
     photoURL: z.string().nullable().optional(),
     avatarId: z.string().default('vinyl-1'),
     authProviders: z.array(z.string()).default([]),
+    shareId: z.string().nullable().optional(),
+    sharingEnabled: z.boolean().optional(),
     createdAt: z.any().optional(),
     updatedAt: z.any().optional(),
 });
