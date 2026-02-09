@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import {
     initializeFirestore,
@@ -25,6 +26,18 @@ if (!firebaseConfig.apiKey) {
 /** Initialized Firebase app instance */
 export const app = initializeApp(firebaseConfig);
 
+// Enable App Check debug token provider when running on localhost
+if (import.meta.env.DEV) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+}
+
+/** Firebase App Check — must be initialized before other Firebase services */
+export const appCheck = initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LdS3WUsAAAAABv3svF1Fj7yEwcuxyBaf-b4ipJD'),
+    isTokenAutoRefreshEnabled: true,
+});
+
 /** Firebase Auth instance */
 export const auth = getAuth(app);
 
@@ -46,3 +59,6 @@ if (import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === 'true') {
     connectStorageEmulator(storage, '127.0.0.1', 9199);
     connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 }
+
+// NOTE: Configure Firebase spending limits / budget alerts in the Firebase Console
+// (Console → Usage & Billing → Budget Alerts) to protect against unexpected charges.

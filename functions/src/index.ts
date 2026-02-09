@@ -300,6 +300,7 @@ export const importRsdReleases = onCall(
         timeoutSeconds: 300,
         memory: '512MiB',
         maxInstances: 2,
+        enforceAppCheck: true,
     },
     async (request) => {
         // Must be authenticated

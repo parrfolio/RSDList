@@ -12,6 +12,7 @@ import MyListPage from '@/pages/MyListPage';
 import AccountPage from '@/pages/AccountPage';
 import ReleaseDetailPage from '@/pages/ReleaseDetailPage';
 import SharedListPage from '@/pages/SharedListPage';
+import LegalPage from '@/pages/LegalPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: '/auth',
     element: <AuthPage />,
+  },
+  {
+    path: '/legal/:docType',
+    element: <LegalPage />,
   },
   {
     path: '/shared/:shareId',

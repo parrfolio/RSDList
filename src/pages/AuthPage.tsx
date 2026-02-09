@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, Fragment } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Cropper from 'react-easy-crop';
 import type { Area } from 'react-easy-crop';
 import { useAuth } from '@/hooks/useAuth';
@@ -748,6 +748,14 @@ export default function AuthPage() {
           >
             Log in
           </button>
+          <p className="text-[11px] text-white/40 text-center leading-snug max-w-[280px]">
+            By signing up, you agree to the{' '}
+            <Link to="/legal/terms" className="underline hover:text-white/60">Terms of Service</Link>{' '}
+            and{' '}
+            <Link to="/legal/privacy" className="underline hover:text-white/60">Privacy Policy</Link>,
+            including{' '}
+            <Link to="/legal/cookies" className="underline hover:text-white/60">cookie use</Link>.
+          </p>
           <p className="text-[11px] text-white/40 text-center leading-snug max-w-[280px]">
             This app is not affiliated with, endorsed by, or associated with Record Store Day or
             recordstoreday.com. Made with love by a fellow record collector.
