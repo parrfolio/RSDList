@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { initializeAppCheck, ReCaptchaV3Provider, type AppCheck } from 'firebase/app-check';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import {
     initializeFirestore,
@@ -32,11 +32,16 @@ if (import.meta.env.DEV) {
     (self as any).FIREBASE_APPCHECK_DEBUG_TOKEN = true;
 }
 
-/** Firebase App Check — must be initialized before other Firebase services */
-export const appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('6LdS3WUsAAAAABv3svF1Fj7yEwcuxyBaf-b4ipJD'),
-    isTokenAutoRefreshEnabled: true,
-});
+/** Firebase App Check — initialized gracefully so a misconfigured key doesn't block the app */
+export let appCheck: AppCheck | null = null;
+try {
+    appCheck = initializeAppCheck(app, {
+        provider: new ReCaptchaV3Provider('6LdS3WUsAAAAABv3svF1Fj7yEwcuxyBaf-b4ipJD'),
+        isTokenAutoRefreshEnabled: true,
+    });
+} catch (e) {
+    console.warn('App Check initialization failed — continuing without it:', e);
+}
 
 /** Firebase Auth instance */
 export const auth = getAuth(app);
