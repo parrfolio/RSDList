@@ -15,6 +15,7 @@ import { auth } from '@/lib/firebase';
 import { friendlyError } from '@/lib/errorMessages';
 import { ArrowLeft, Check, User, Upload, Loader2, X } from 'lucide-react';
 import rsdLogo from '@/images/rsd-logo.png';
+import rsdBg from '@/images/rsd-bg.png';
 
 type Mode = 'splash' | 'login' | 'signup-1' | 'signup-2' | 'signup-3';
 
@@ -671,10 +672,20 @@ export default function AuthPage() {
 
   // ── Render: Splash screen (default) ──
   return (
-    <div className="min-h-screen flex flex-col bg-background text-white">
-      <div className="w-full max-w-md mx-auto flex flex-col flex-1 px-6">
+    <div
+      className="min-h-screen flex flex-col text-white relative overflow-hidden"
+      style={{
+        backgroundImage: `url(${rsdBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}
+    >
+      {/* Overlay for readability */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/80 to-background" />
+
+      <div className="w-full max-w-md mx-auto flex flex-col flex-1 px-6 relative z-10">
         {/* Logo area — takes up top ~55% */}
-        <div className="flex-[3] flex items-center justify-center pt-8">
+        <div className="flex-[2] flex items-center justify-center pt-8">
           <img
             src={rsdLogo}
             alt="Record Store Day"
