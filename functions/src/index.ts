@@ -2,8 +2,6 @@ import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
 import * as cheerio from 'cheerio';
-import * as fs from 'fs';
-import * as path from 'path';
 
 initializeApp();
 const db = getFirestore();
@@ -457,37 +455,18 @@ export const sharedListMeta = onRequest(
         const ogImage = `${BASE_URL}/rsdlist.png`;
         const ogUrl = `${BASE_URL}/shared/${shareId}`;
 
-        // Read the built index.html (copied into lib/ at deploy time)
+        // Fetch the SPA's index.html from Firebase Hosting.
+        // Static files are served before rewrites, so /index.html returns
+        // the Vite-built HTML directly (no loop).
         let html: string;
         try {
-            const indexPath = path.join(__dirname, 'index.html');
-            html = fs.readFileSync(indexPath, 'utf-8');
-        } catch {
-            // Fallback: serve a minimal HTML shell that redirects to the SPA
-            html = `<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(ogTitle)}</title>
-    <meta name="title" content="${escapeHtml(ogTitle)}" />
-    <meta name="description" content="${escapeHtml(ogDescription)}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="${ogUrl}" />
-    <meta property="og:title" content="${escapeHtml(ogTitle)}" />
-    <meta property="og:description" content="${escapeHtml(ogDescription)}" />
-    <meta property="og:image" content="${ogImage}" />
-    <meta property="og:image:width" content="2048" />
-    <meta property="og:image:height" content="1536" />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="${ogUrl}" />
-    <meta property="twitter:title" content="${escapeHtml(ogTitle)}" />
-    <meta property="twitter:description" content="${escapeHtml(ogDescription)}" />
-    <meta property="twitter:image" content="${ogImage}" />
-    <meta http-equiv="refresh" content="0;url=${ogUrl}" />
-  </head>
-  <body></body>
-</html>`;
+            const resp = await fetch(`${BASE_URL}/index.html`);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            html = await resp.text();
+        } catch (err) {
+            console.error('Failed to fetch index.html from hosting:', err);
+            // Serve a self-contained fallback with dynamic meta tags
+            html = buildFallbackHtml(ogTitle, ogDescription, ogUrl, ogImage);
             res.status(200).set('Content-Type', 'text/html').send(html);
             return;
         }
@@ -500,6 +479,10 @@ export const sharedListMeta = onRequest(
         html = html.replace(
             /<meta name="description"[^>]*>/,
             `<meta name="description" content="${escapeHtml(ogDescription)}" />`,
+        );
+        html = html.replace(
+            /<title>[^<]*<\/title>/,
+            `<title>${escapeHtml(ogTitle)}</title>`,
         );
 
         // OG tags
@@ -540,4 +523,40 @@ function escapeHtml(str: string): string {
         .replace(/"/g, '&quot;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;');
+}
+
+function buildFallbackHtml(
+    title: string,
+    description: string,
+    url: string,
+    image: string,
+): string {
+    const t = escapeHtml(title);
+    const d = escapeHtml(description);
+    return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>${t}</title>
+    <meta name="title" content="${t}" />
+    <meta name="description" content="${d}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="${url}" />
+    <meta property="og:title" content="${t}" />
+    <meta property="og:description" content="${d}" />
+    <meta property="og:image" content="${image}" />
+    <meta property="og:image:width" content="2048" />
+    <meta property="og:image:height" content="1536" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="${url}" />
+    <meta property="twitter:title" content="${t}" />
+    <meta property="twitter:description" content="${d}" />
+    <meta property="twitter:image" content="${image}" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script>window.location.replace('${url}?nofn=1');</script>
+  </body>
+</html>`;
 }
