@@ -210,7 +210,8 @@ export default function AccountPage() {
       <BuyMeCoffee />
 
       <p className="text-[11px] text-muted-foreground/60 text-center leading-snug px-4">
-        This app is not affiliated with, endorsed by, or associated with Record Store Day or recordstoreday.com.
+        This app is not affiliated with, endorsed by, or associated with Record Store Day or
+        recordstoreday.com. Made with love by a fellow record collector.
       </p>
 
       {/* Fullscreen crop overlay */}

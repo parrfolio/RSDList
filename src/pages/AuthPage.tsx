@@ -749,7 +749,8 @@ export default function AuthPage() {
             Log in
           </button>
           <p className="text-[11px] text-white/40 text-center leading-snug max-w-[280px]">
-            This app is not affiliated with, endorsed by, or associated with Record Store Day or recordstoreday.com.
+            This app is not affiliated with, endorsed by, or associated with Record Store Day or
+            recordstoreday.com. Made with love by a fellow record collector.
           </p>
         </div>
       </div>
