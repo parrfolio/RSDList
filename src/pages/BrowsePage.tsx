@@ -16,10 +16,10 @@ import albumViewIcon from '@/images/album-view.svg';
 import listViewIcon from '@/images/list-view.svg';
 import closeIcon from '@/images/close.svg';
 
-/** Short header label: "RSD 2026" or "RSD BF 2025" */
+/** Short header label: "RSD LIST 2026" or "RSD LIST BF 2025" */
 function getShortEventLabel(eventId: string): string {
   const { year, season } = parseEventId(eventId);
-  return season === 'spring' ? `RSD ${year}` : `RSD BF ${year}`;
+  return season === 'spring' ? `RSD LIST ${year}` : `RSD LIST BF ${year}`;
 }
 
 export default function BrowsePage() {
