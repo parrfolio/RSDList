@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useReleases } from '@/hooks/useReleases';
+import { fixTitleArtist } from '@/lib/releaseUtils';
 import { useWants, useAddWant, useRemoveWant } from '@/hooks/useWants';
 import { useEvents, useDeleteEvent } from '@/hooks/useEvents';
 import { useUIStore } from '@/stores/uiStore';
@@ -88,10 +89,12 @@ export default function BrowsePage() {
       });
     }
 
-    // Sort
+    // Sort by display artist (after fixTitleArtist correction)
     const sorted = [...filtered];
     sorted.sort((a, b) => {
-      const cmp = a.artist.localeCompare(b.artist);
+      const aArtist = fixTitleArtist(a.title, a.artist).artist;
+      const bArtist = fixTitleArtist(b.title, b.artist).artist;
+      const cmp = aArtist.localeCompare(bArtist);
       return sortOrder === 'ARTIST_ASC' ? cmp : -cmp;
     });
 

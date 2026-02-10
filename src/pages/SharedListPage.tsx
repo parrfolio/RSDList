@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { fixTitleArtist } from '@/lib/releaseUtils';
 import { useAuth } from '@/hooks/useAuth';
 import { useShareInfo } from '@/hooks/useSharedList';
 import { useWants, useAddWant, useRemoveWant } from '@/hooks/useWants';
@@ -114,7 +115,11 @@ export default function SharedListPage() {
       }));
 
     const all = [...filtered, ...fallbackReleases];
-    all.sort((a, b) => a.artist.localeCompare(b.artist));
+    all.sort((a, b) => {
+      const aArtist = fixTitleArtist(a.title, a.artist).artist;
+      const bArtist = fixTitleArtist(b.title, b.artist).artist;
+      return aArtist.localeCompare(bArtist);
+    });
     return all;
   }, [releases, wants]);
 

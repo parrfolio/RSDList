@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { fixTitleArtist } from '@/lib/releaseUtils';
 import { useWants, useAddWant, useRemoveWant, useToggleWantStatus } from '@/hooks/useWants';
 import { useReleases } from '@/hooks/useReleases';
 import { useUIStore } from '@/stores/uiStore';
@@ -65,9 +66,11 @@ export default function MyListPage() {
 
     const all = [...filtered, ...fallbackReleases];
 
-    // Sort same as browse
+    // Sort by display artist (after fixTitleArtist correction)
     all.sort((a, b) => {
-      const cmp = a.artist.localeCompare(b.artist);
+      const aArtist = fixTitleArtist(a.title, a.artist).artist;
+      const bArtist = fixTitleArtist(b.title, b.artist).artist;
+      const cmp = aArtist.localeCompare(bArtist);
       return sortOrder === 'ARTIST_ASC' ? cmp : -cmp;
     });
 

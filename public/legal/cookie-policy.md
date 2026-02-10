@@ -20,27 +20,27 @@ Cookies are small text files stored on your device by your web browser. Similar 
 
 ### 3.1 Essential — Firebase Authentication
 
-| Technology | Purpose | Duration | Type |
-|---|---|---|---|
-| Firebase Auth session tokens | Keep you signed in and authenticate your requests | Session / up to 1 hour (auto-refreshed) | First-party, essential |
-| Firebase Auth persistence (IndexedDB/Local Storage) | Remember your sign-in across browser sessions | Until you sign out or clear browser data | First-party, essential |
+| Technology                                          | Purpose                                           | Duration                                 | Type                   |
+| --------------------------------------------------- | ------------------------------------------------- | ---------------------------------------- | ---------------------- |
+| Firebase Auth session tokens                        | Keep you signed in and authenticate your requests | Session / up to 1 hour (auto-refreshed)  | First-party, essential |
+| Firebase Auth persistence (IndexedDB/Local Storage) | Remember your sign-in across browser sessions     | Until you sign out or clear browser data | First-party, essential |
 
 These are **required** for the app to function. Without them, you cannot sign in or access your personal wants list.
 
 ### 3.2 Essential — Firestore Offline Cache
 
-| Technology | Purpose | Duration | Type |
-|---|---|---|---|
+| Technology                  | Purpose                                                                    | Duration                                      | Type                   |
+| --------------------------- | -------------------------------------------------------------------------- | --------------------------------------------- | ---------------------- |
 | IndexedDB (Firestore cache) | Cache release and wants data locally for offline access and faster loading | Until you clear browser data or cache expires | First-party, essential |
 
 This enables the app to work in areas with poor connectivity (like a busy record store on RSD morning). It only caches data you've already accessed.
 
 ### 3.3 Essential — Google reCAPTCHA v3
 
-| Technology | Purpose | Duration | Type |
-|---|---|---|---|
-| `_GRECAPTCHA` cookie | Bot/abuse detection via Firebase App Check | Session | Third-party (Google) |
-| reCAPTCHA-related cookies | Risk analysis and abuse prevention | Varies (set by Google) | Third-party (Google) |
+| Technology                | Purpose                                    | Duration               | Type                 |
+| ------------------------- | ------------------------------------------ | ---------------------- | -------------------- |
+| `_GRECAPTCHA` cookie      | Bot/abuse detection via Firebase App Check | Session                | Third-party (Google) |
+| reCAPTCHA-related cookies | Risk analysis and abuse prevention         | Varies (set by Google) | Third-party (Google) |
 
 reCAPTCHA v3 runs in the background to protect the app from bots and abuse. Google may set cookies and collect certain device information as part of this process. See [Google's Privacy Policy](https://policies.google.com/privacy) for details on how reCAPTCHA processes data.
 
@@ -48,9 +48,9 @@ reCAPTCHA v3 runs in the background to protect the app from bots and abuse. Goog
 
 If you sign in with Google or Facebook, those providers may set their own cookies during the authentication flow:
 
-| Provider | Purpose | Set When | Type |
-|---|---|---|---|
-| Google | OAuth sign-in flow | When you sign in with Google | Third-party |
+| Provider        | Purpose            | Set When                       | Type        |
+| --------------- | ------------------ | ------------------------------ | ----------- |
+| Google          | OAuth sign-in flow | When you sign in with Google   | Third-party |
 | Facebook (Meta) | OAuth sign-in flow | When you sign in with Facebook | Third-party |
 
 These cookies are set by the respective providers during sign-in and are governed by their own cookie and privacy policies:
