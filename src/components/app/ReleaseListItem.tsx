@@ -40,7 +40,7 @@ export function ReleaseListItem({
     >
       <div className="flex items-center gap-3 p-3 rounded-lg transition-colors hover:bg-[#1e1e1e]">
         {/* Thumbnail */}
-        <div className="h-16 w-16 rounded-md bg-[#1e1e1e] flex-shrink-0 overflow-hidden">
+        <div className="h-24 w-24 rounded-md bg-[#1e1e1e] flex-shrink-0 overflow-hidden">
           {release.imageUrl ? (
             <img
               src={release.imageUrl}
