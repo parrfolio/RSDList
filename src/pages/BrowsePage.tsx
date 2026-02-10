@@ -14,6 +14,7 @@ import { buildWantId, getEventLabel, parseEventId, type Want } from '@/types';
 
 import albumViewIcon from '@/images/album-view.svg';
 import listViewIcon from '@/images/list-view.svg';
+import closeIcon from '@/images/close.svg';
 
 /** Short header label: "RSD 2026" or "RSD BF 2025" */
 function getShortEventLabel(eventId: string): string {
@@ -188,9 +189,23 @@ export default function BrowsePage() {
               setTimeout(() => setSearchFocused(false), 200);
             }
           }}
-          className="w-full rounded-lg bg-[#1e1e1e] border border-[#333] px-4 py-2.5 text-sm text-white placeholder-[#777] focus:outline-none focus:border-[#555] transition-colors"
+          className="w-full rounded-lg bg-[#1e1e1e] border border-[#333] px-4 py-2.5 pr-10 text-sm text-white placeholder-[#777] focus:outline-none focus:border-[#555] transition-colors"
           aria-label="Search releases"
         />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery('');
+              clearTags();
+              searchInputRef.current?.focus();
+            }}
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 opacity-60 hover:opacity-100 transition-opacity"
+            aria-label="Clear search"
+          >
+            <img src={closeIcon} alt="" className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
       {/* Search prompt */}
