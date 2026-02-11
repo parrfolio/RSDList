@@ -5,13 +5,15 @@ import type { Area } from 'react-easy-crop';
 import { useAuth } from '@/hooks/useAuth';
 import { useWants } from '@/hooks/useWants';
 import { useUIStore } from '@/stores/uiStore';
-import { signOut, updateUserProfile, uploadAvatar } from '@/lib/auth';
+import { signOut, updateUserProfile, uploadAvatar, deleteAccount } from '@/lib/auth';
 import { readFileAsDataURL, getCroppedBlob } from '@/lib/cropUtils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
-import { User, Camera, Pencil, LogOut, Check, Loader2, X } from 'lucide-react';
+import { User, Camera, Pencil, LogOut, Check, Loader2, X, Trash2, AlertTriangle } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogClose } from '@/components/ui/dialog';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { BuyMeCoffee } from '@/components/app/BuyMeCoffee';
 import { friendlyError } from '@/lib/errorMessages';
 import { toast } from 'sonner';
@@ -27,6 +29,11 @@ export default function AccountPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [imgError, setImgError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [confirmText, setConfirmText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Crop state
   const [cropSrc, setCropSrc] = useState<string | null>(null);
@@ -98,6 +105,23 @@ export default function AccountPage() {
       setIsUploading(false);
       setCropSrc(null);
       setCroppedArea(null);
+    }
+  }
+
+  async function handleDeleteAccount() {
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      await deleteAccount();
+      setDeleteDialogOpen(false);
+      toast.success('Your account has been deleted.');
+      navigate('/auth');
+    } catch (err) {
+      const message = friendlyError(err, 'Account deletion failed. Please try again.');
+      setDeleteError(message);
+      toast.error(message);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -213,6 +237,90 @@ export default function AccountPage() {
         This app is not affiliated with, endorsed by, or associated with Record Store Day or
         recordstoreday.com. Made with love by a fellow record collector.
       </p>
+
+      <Separator className="my-2" />
+      <p className="text-xs text-muted-foreground uppercase tracking-wide text-center">Danger Zone</p>
+      <Button
+        variant="ghost"
+        onClick={() => setDeleteDialogOpen(true)}
+        className="w-full text-destructive hover:bg-destructive/10 hover:text-destructive"
+      >
+        <Trash2 className="h-4 w-4 mr-2" />
+        Delete Account
+      </Button>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={(open) => {
+        if (!isDeleting) {
+          setDeleteDialogOpen(open);
+          if (!open) {
+            setConfirmText('');
+            setDeleteError(null);
+          }
+        }
+      }}>
+        <DialogContent
+          className="max-w-sm"
+          onInteractOutside={(e) => { if (isDeleting) e.preventDefault(); }}
+          onEscapeKeyDown={(e) => { if (isDeleting) e.preventDefault(); }}
+        >
+          <DialogHeader className="text-center sm:text-center">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 mb-4">
+              <AlertTriangle className="h-6 w-6 text-destructive" />
+            </div>
+            <DialogTitle>Delete your account?</DialogTitle>
+            <DialogDescription>
+              This will permanently delete your profile, wants list, and all associated data. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2 mt-4">
+            <label htmlFor="confirm-delete" className="text-sm font-medium">
+              Type DELETE to confirm
+            </label>
+            <Input
+              id="confirm-delete"
+              value={confirmText}
+              onChange={(e) => setConfirmText(e.target.value)}
+              placeholder="DELETE"
+              autoComplete="off"
+              spellCheck={false}
+              autoFocus
+              disabled={isDeleting}
+            />
+          </div>
+
+          {deleteError && (
+            <Alert variant="destructive" className="mt-4">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertTitle>Deletion failed</AlertTitle>
+              <AlertDescription>{deleteError}</AlertDescription>
+            </Alert>
+          )}
+
+          <div className="flex flex-col gap-2 mt-6">
+            <Button
+              variant="destructive"
+              className="w-full"
+              disabled={confirmText !== 'DELETE' || isDeleting}
+              onClick={handleDeleteAccount}
+            >
+              {isDeleting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Deleting…
+                </>
+              ) : (
+                'Delete Account'
+              )}
+            </Button>
+            <DialogClose asChild>
+              <Button variant="ghost" className="w-full" disabled={isDeleting}>
+                Cancel
+              </Button>
+            </DialogClose>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Fullscreen crop overlay */}
       {cropSrc && (

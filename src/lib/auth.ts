@@ -11,7 +11,8 @@ import {
 } from 'firebase/auth';
 import { doc, getDoc, setDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { auth, db, storage } from '@/lib/firebase';
+import { httpsCallable } from 'firebase/functions';
+import { auth, db, storage, functions } from '@/lib/firebase';
 import type { User } from '@/types';
 
 const googleProvider = new GoogleAuthProvider();
@@ -81,6 +82,19 @@ export async function uploadAvatar(uid: string, file: File): Promise<string> {
     await updateUserProfile(uid, { photoURL: downloadURL });
 
     return downloadURL;
+}
+
+/**
+ * Delete the current user's account and all associated data.
+ * Calls a Cloud Function to clean up server-side data, then signs out locally.
+ */
+export async function deleteAccount(): Promise<void> {
+    if (!auth.currentUser) {
+        throw new Error('Must be signed in to delete account');
+    }
+    const deleteUserAccount = httpsCallable(functions, 'deleteUserAccount');
+    await deleteUserAccount();
+    await firebaseSignOut(auth);
 }
 
 /** Create user profile document if it doesn't exist */

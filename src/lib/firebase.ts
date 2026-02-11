@@ -9,6 +9,7 @@ import {
 } from 'firebase/firestore';
 import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getFunctions, connectFunctionsEmulator } from 'firebase/functions';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -17,6 +18,7 @@ const firebaseConfig = {
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 if (!firebaseConfig.apiKey) {
@@ -64,6 +66,11 @@ if (import.meta.env.DEV && import.meta.env.VITE_USE_EMULATORS === 'true') {
     connectStorageEmulator(storage, '127.0.0.1', 9199);
     connectFunctionsEmulator(functions, '127.0.0.1', 5001);
 }
+
+/** Firebase Analytics — only initialized in production and when supported by the browser */
+export const analyticsPromise = import.meta.env.PROD
+    ? isSupported().then((supported) => (supported ? getAnalytics(app) : null)).catch(() => null)
+    : Promise.resolve(null);
 
 // NOTE: Configure Firebase spending limits / budget alerts in the Firebase Console
 // (Console → Usage & Billing → Budget Alerts) to protect against unexpected charges.

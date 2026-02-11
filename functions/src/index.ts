@@ -1,6 +1,8 @@
 import { onCall, onRequest, HttpsError } from 'firebase-functions/v2/https';
 import { initializeApp } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
 import { getFirestore, FieldValue } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 import * as cheerio from 'cheerio';
 
 initializeApp();
@@ -561,3 +563,84 @@ function buildFallbackHtml(
   </body>
 </html>`;
 }
+
+// ---------------------------------------------------------------------------
+// Cloud Function: deleteUserAccount
+// Securely deletes all user data (wants, shares, storage, profile, auth)
+// ---------------------------------------------------------------------------
+
+export const deleteUserAccount = onCall(
+    {
+        region: 'us-central1',
+        enforceAppCheck: true,
+    },
+    async (request) => {
+        try {
+            // Must be authenticated
+            if (!request.auth) {
+                throw new HttpsError('unauthenticated', 'Must be signed in');
+            }
+
+            const uid = request.auth.uid;
+
+            // 1. Delete wants subcollection in batches of 500
+            const BATCH_SIZE = 500;
+            const wantsRef = db.collection('users').doc(uid).collection('wants');
+            const wantsSnapshot = await wantsRef.get();
+
+            for (let i = 0; i < wantsSnapshot.docs.length; i += BATCH_SIZE) {
+                const batch = db.batch();
+                const chunk = wantsSnapshot.docs.slice(i, i + BATCH_SIZE);
+                for (const doc of chunk) {
+                    batch.delete(doc.ref);
+                }
+                await batch.commit();
+            }
+
+            // 2. Delete shares where uid matches
+            const sharesSnapshot = await db
+                .collection('shares')
+                .where('uid', '==', uid)
+                .get();
+
+            for (let i = 0; i < sharesSnapshot.docs.length; i += BATCH_SIZE) {
+                const batch = db.batch();
+                const chunk = sharesSnapshot.docs.slice(i, i + BATCH_SIZE);
+                for (const doc of chunk) {
+                    batch.delete(doc.ref);
+                }
+                await batch.commit();
+            }
+
+            // 3. Delete storage avatars
+            try {
+                await getStorage()
+                    .bucket()
+                    .deleteFiles({ prefix: `avatars/${uid}/` });
+            } catch (storageErr: unknown) {
+                const code = (storageErr as { code?: number }).code;
+                if (code !== 404) {
+                    const errMsg = storageErr instanceof Error ? storageErr.message : String(code ?? 'unknown');
+                    console.warn(`Storage avatar cleanup failed for uid ${uid}: ${errMsg}`);
+                }
+            }
+
+            // 4. Delete user document
+            await db.collection('users').doc(uid).delete();
+
+            // 5. Delete auth user
+            await getAuth().deleteUser(uid);
+
+            return { success: true, message: 'Account deleted successfully' };
+        } catch (err) {
+            if (err instanceof HttpsError) {
+                throw err;
+            }
+            console.error('deleteUserAccount failed:', err);
+            throw new HttpsError(
+                'internal',
+                'Failed to delete account. Please try again.',
+            );
+        }
+    },
+);
