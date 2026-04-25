@@ -1,0 +1,84 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/session-start/context-loader.sh",
+        "cwd": ".",
+        "timeoutSec": 10,
+        "comment": "Auto-detect SpecKit artifacts, check git branch, validate environment"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/session-end/session-summary.sh",
+        "cwd": ".",
+        "timeoutSec": 10,
+        "comment": "Generate session summary from audit log"
+      }
+    ],
+    "userPromptSubmitted": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/user-prompt-submitted/conductor-routing.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Inject advisory conductor-first routing unless the user explicitly requested a specialist"
+      },
+      {
+        "type": "command",
+        "bash": ".github/hooks/user-prompt-submitted/prompt-capture.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Capture user prompt to log for scope verification reference"
+      }
+    ],
+    "subagentStart": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/subagent-start/subagent-context.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Inject delegated-scope and reporting guidance into subagents when the runtime supports subagent lifecycle hooks"
+      }
+    ],
+    "subagentStop": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/subagent-stop/subagent-stop-guard.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Block subagents from stopping on empty or placeholder-only completions when the runtime supports subagent lifecycle hooks"
+      }
+    ],
+    "preToolUse": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/pre-tool-use/dispatcher.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Consolidated guard: protected-files, no-heredoc, git-safety, conductor-delegation, completion-file, mandatory-ui-gates"
+      }
+    ],
+    "postToolUse": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/post-tool-use/audit-logger.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Log every tool invocation to structured JSONL audit trail"
+      }
+    ],
+    "errorOccurred": [
+      {
+        "type": "command",
+        "bash": ".github/hooks/error-occurred/error-logger.sh",
+        "cwd": ".",
+        "timeoutSec": 5,
+        "comment": "Log tool errors to audit trail and increment session error counter"
+      }
+    ]
+  }
+}

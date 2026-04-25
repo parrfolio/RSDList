@@ -1,6 +1,11 @@
 ---
 description: Convert existing tasks into actionable, dependency-ordered GitHub issues for the feature based on available design artifacts.
-tools: ['github/github-mcp-server/issue_write']
+tools: ["github/github-mcp-server/issue_write"]
+handoffs:
+  - label: Orchestrate Build
+    agent: conductor.powder
+    prompt: "Orchestrate the implementation of the tasks converted to GitHub issues above."
+    send: false
 ---
 
 ## User Input
