@@ -257,7 +257,7 @@ export default function ReleaseDetailPage() {
 
       {/* Album art */}
       <div className="flex justify-center px-4 pt-4 pb-6">
-        <div className="w-[65%] max-w-[300px] aspect-square rounded-lg overflow-hidden shadow-2xl">
+        <div className="w-[65%] max-w-[300px] aspect-square rounded-lg overflow-hidden shadow-2xl relative">
           {release.imageUrl ? (
             <img
               src={release.imageUrl}
@@ -269,14 +269,22 @@ export default function ReleaseDetailPage() {
               <span className="text-4xl text-white/20">♫</span>
             </div>
           )}
+          {release.cancelled && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+              <span className="text-red-500 font-bold text-lg text-center px-2">Sorry, Cancelled!</span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Title & artist */}
       <div className="text-center px-6 space-y-1 pb-5">
-        <h1 className="font-bold text-white" style={{ fontSize: '25px' }}>
+        <h1 className={`font-bold text-white ${release.cancelled ? 'line-through opacity-60' : ''}`} style={{ fontSize: '25px' }}>
           {clean.title}
         </h1>
+        {release.cancelled && (
+          <p className="text-red-500 font-bold text-sm">Sorry, Cancelled!</p>
+        )}
         <p className="text-[16px] text-[#B3B3B3]">{clean.artist}</p>
       </div>
 

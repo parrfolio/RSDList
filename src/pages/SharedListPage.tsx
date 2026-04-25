@@ -116,12 +116,18 @@ export default function SharedListPage() {
 
     const all = [...filtered, ...fallbackReleases];
     all.sort((a, b) => {
+      // ACQUIRED ("Got It") items first, then WANTED
+      const aWant = wantsMap.get(buildWantId(a.eventId, a.releaseId));
+      const bWant = wantsMap.get(buildWantId(b.eventId, b.releaseId));
+      const aAcq = aWant?.status === 'ACQUIRED' ? 0 : 1;
+      const bAcq = bWant?.status === 'ACQUIRED' ? 0 : 1;
+      if (aAcq !== bAcq) return aAcq - bAcq;
       const aArtist = fixTitleArtist(a.title, a.artist).artist;
       const bArtist = fixTitleArtist(b.title, b.artist).artist;
       return aArtist.localeCompare(bArtist);
     });
     return all;
-  }, [releases, wants]);
+  }, [releases, wants, wantsMap]);
 
   const acquiredCount = useMemo(
     () => (wants ?? []).filter((w) => w.status === 'ACQUIRED').length,

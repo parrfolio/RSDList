@@ -48,13 +48,18 @@ export function ReleaseCard({
               <span className="text-[#333] text-3xl">♫</span>
             </div>
           )}
+          {release.cancelled && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/60">
+              <span className="text-red-500 font-bold text-sm text-center px-2">Sorry, Cancelled!</span>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Title + Artist + heart */}
       <div className="flex items-start gap-1.5 mt-1.5">
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-white font-bold leading-tight truncate">{title}</p>
+          <p className={`text-sm text-white font-bold leading-tight truncate ${release.cancelled ? 'line-through opacity-60' : ''}`}>{title}</p>
           <p className="text-xs text-[#B3B3B3] leading-tight truncate">{artist}</p>
         </div>
 
@@ -73,19 +78,22 @@ export function ReleaseCard({
           </button>
         )}
 
-        {isAuthenticated && (
-          <button
-            type="button"
-            className="flex-shrink-0 p-0.5"
-            onClick={() => {
-              if (hasWant) {
-                onRemoveWant(want!.wantId);
-              } else {
-                onAddWant(release);
-              }
-            }}
-            aria-label={hasWant ? `Remove ${title} from wants` : `Add ${title} to wants`}
-          >
+        <button
+          type="button"
+          className="flex-shrink-0 p-0.5"
+          onClick={() => {
+            if (!isAuthenticated) {
+              navigate('/auth');
+              return;
+            }
+            if (hasWant) {
+              onRemoveWant(want!.wantId);
+            } else {
+              onAddWant(release);
+            }
+          }}
+          aria-label={hasWant ? `Remove ${title} from wants` : `Add ${title} to wants`}
+        >
             {hasWant ? (
               <svg
                 width="20"
@@ -99,9 +107,8 @@ export function ReleaseCard({
               </svg>
             ) : (
               <img src={heartIcon} alt="" className="h-5 w-5" style={{ opacity: 0.4 }} />
-            )}
-          </button>
-        )}
+          )}
+        </button>
       </div>
     </div>
   );
