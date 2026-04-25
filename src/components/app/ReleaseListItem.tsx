@@ -57,7 +57,9 @@ export function ReleaseListItem({
 
         {/* Info */}
         <div className="flex-1 min-w-0">
-          <h3 className="text-sm text-white font-bold leading-tight truncate">{title}</h3>
+          <h3 className={`text-sm text-white font-bold leading-tight truncate ${release.cancelled ? 'line-through opacity-60' : ''}`}>
+            {title}{release.cancelled && <span className="text-red-500 no-underline"> (Sorry, Cancelled!)</span>}
+          </h3>
           <p className="text-xs text-[#B3B3B3] leading-tight truncate">{artist}</p>
           {description && (
             <p className="text-[#777] line-clamp-2 mt-1" style={{ fontSize: '12px' }}>
@@ -96,23 +98,26 @@ export function ReleaseListItem({
         )}
 
         {/* Heart action */}
-        {isAuthenticated && (
-          <button
-            type="button"
-            className="flex-shrink-0 p-1"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              if (hasWant) {
-                onRemoveWant(want!.wantId);
-              } else {
-                onAddWant(release);
-              }
-            }}
-            aria-label={
-              hasWant ? `Remove ${release.title} from wants` : `Add ${release.title} to wants`
+        <button
+          type="button"
+          className="flex-shrink-0 p-1"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isAuthenticated) {
+              navigate('/auth');
+              return;
             }
-          >
+            if (hasWant) {
+              onRemoveWant(want!.wantId);
+            } else {
+              onAddWant(release);
+            }
+          }}
+          aria-label={
+            hasWant ? `Remove ${release.title} from wants` : `Add ${release.title} to wants`
+          }
+        >
             {hasWant ? (
               <svg
                 width="20"
@@ -126,9 +131,8 @@ export function ReleaseListItem({
               </svg>
             ) : (
               <img src={heartIcon} alt="" className="h-5 w-5" style={{ opacity: 0.4 }} />
-            )}
-          </button>
-        )}
+          )}
+        </button>
       </div>
     </div>
   );

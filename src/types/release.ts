@@ -13,6 +13,7 @@ export const ReleaseSchema = z.object({
     description: z.string().nullable().optional(),
     imageUrl: z.string().nullable().optional(),
     detailsUrl: z.string().nullable().optional(),
+    cancelled: z.boolean().optional(),
     createdAt: z.any().optional(),
     updatedAt: z.any().optional(),
 });
